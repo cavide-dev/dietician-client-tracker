@@ -15,19 +15,36 @@ def add_fake_data():
 
     # 3. İngilizce Test Verisi Hazırla
     # Python'da buna 'Dictionary' (Sözlük) denir.
-    fake_client = {
-        "full_name": "John Doe",          # Ad Soyad -> full_name
-        "phone": "+1 555 0199",           # Telefon -> phone
-        "email": "johndoe@example.com",   # E-posta ekledik
-        "gender": "Male",                 # Cinsiyet -> gender
-        "notes": "Type 2 Diabetes patient. Needs low sugar diet." # Notlar -> notes
-    }
-
-    # 4. Veriyi Kutuya At (Insert)
-    # insert_one: Tek bir kayıt ekler.
-    clients_collection.insert_one(fake_client)
+    fake_clients = [
+        {
+            "full_name": "John Doe",
+            "phone": "+1 555 0199",
+            "email": "johndoe@example.com",
+            "gender": "Male",
+            "notes": "Diabetes patient"
+        },
+        {
+            "full_name": "Jane Smith",
+            "phone": "+1 555 0200",
+            "email": "janesmith@example.com",
+            "gender": "Female",
+            "notes": "Vegan diet"
+        },
+        {
+            "full_name": "Ali Yılmaz",
+            "phone": "+90 555 123 45 67",
+            "email": "ali@example.com",
+            "gender": "Male",
+            "notes": "Gluten intolerant"
+        }
+    ]
     
-    print("SUCCESS: Dummy client 'John Doe' added to MongoDB!")
+    # Hepsini birden ekle:
+    clients_collection.insert_many(fake_clients)
+    print(f"{len(fake_clients)} müşteri eklendi!")
+
+    
+    print("SUCCESS: Dummy clients added to MongoDB!")
 
 if __name__ == "__main__":
     add_fake_data()
