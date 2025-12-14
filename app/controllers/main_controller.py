@@ -1,15 +1,19 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 from PyQt5.uic import loadUi
 import os
-# Veritabanı fonksiyonumuzu çağırıyoruz
+# Import our custom database module
 from app.database import get_database
 
 class MainController(QMainWindow):
     def __init__(self):
+        """
+        Initializes the Main Application Window.
+        Loads the UI, connects to the database, and sets up event listeners.
+        """
         super(MainController, self).__init__()
         
-        # --- 1. ARAYÜZÜ YÜKLEME (UI Loading) ---
-        # .ui dosyasının yolunu bulup yüklüyoruz.
+        # --- 1. UI LOADING ---
+        # Locate and load the .ui file dynamically
         ui_path = os.path.join(os.path.dirname(__file__), '..', 'views', 'main_window.ui')
         try:
             loadUi(ui_path, self)
@@ -17,69 +21,66 @@ class MainController(QMainWindow):
             print(f"UI Loading Error: {e}")
             return
 
-        # --- 2. VERİTABANI BAĞLANTISI ---
-        # Uygulama açılır açılmaz veritabanı anahtarını cebimize koyuyoruz.
+        # --- 2. DATABASE CONNECTION ---
+        # Establish connection on startup and store the db reference
         self.db = get_database()
 
-        # --- 3. BAŞLANGIÇ AYARLARI ---
-        # Açılışta Dashboard sayfasını göster.
+        # --- 3. INITIAL SETUP ---
+        # Set the default page to 'Dashboard'
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
         
-        # Müşteri tablosunu doldur (Fonksiyonu aşağıda yazdık)
+        # Populate the clients table immediately
         self.load_clients_table()
 
-        # --- 4. BUTON AKSİYONLARI (Signals & Slots) ---
-        # lambda: Tek satırlık isimsiz fonksiyon demektir. Kısa yol.
+        # --- 4. SIGNAL & SLOT CONNECTIONS (Navigation) ---
+        # Connect buttons to their respective pages in the stacked widget
         self.btn_dashboard.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_dashboard))
         self.btn_clients.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
         self.btn_diet_plans.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_diet_plans))
         self.btn_settings.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_settings))
 
-    # --- ÖZEL FONKSİYONLAR ---
+    # --- CUSTOM METHODS ---
 
     def load_clients_table(self):
         """
-        Veritabanından müşterileri çeker ve arayüzdeki tabloya yerleştirir.
+        Fetches client data from MongoDB and populates the QTableWidget.
         """
-        # Eğer veritabanı bağlantısı yoksa işlem yapma, hata verir.
+        # Check database connection first
         if self.db is None:
-            print("⚠️ No Database Connection!")
+            print("WARNING: No Database Connection! Cannot load table.")
             return
 
-        # 'clients' kutusunu (Collection) seç
+        # Access the 'clients' collection
         clients_collection = self.db['clients']
         
-        # .find(): Kutudaki HER ŞEYİ getir.
-        # list(): Gelen veriyi Python listesine çevir.
+        # Fetch ALL documents from the collection
         all_clients = list(clients_collection.find())
         
-        # Tabloyu Hazırla:
-        # 1. Satır sayısını ayarla (Kaç müşteri varsa o kadar satır)
+        # --- Table Configuration ---
+        # 1. Set row count based on number of clients found
         self.tableWidget.setRowCount(len(all_clients))
         
-        # 2. Sütun sayısını 3 yap (Ad, Telefon, Notlar)
+        # 2. Set column count (Name, Phone, Notes)
         self.tableWidget.setColumnCount(3)
         
-        # 3. Sütun Başlıklarını İngilizce Yap
+        # 3. Set Header Labels
         self.tableWidget.setHorizontalHeaderLabels(["Full Name", "Phone", "Notes"])
 
-        # Döngü ile verileri tabloya yaz (Loop)
-        # enumerate: Hem sırayı (row_index) hem veriyi (client) verir.
+        # --- Populate Data ---
+        # Enumerate gives us both the index (row) and the data (client)
         for row_index, client in enumerate(all_clients):
             
-            # --- 1. Sütun: İsim (Full Name) ---
-            # client.get("full_name"): Veritabanından 'full_name' anahtarını al.
-            # Yoksa "-" koy.
+            # Column 0: Full Name
             name_value = client.get("full_name", "-")
-            name_item = QTableWidgetItem(name_value) # Hücreye dönüşecek nesne
-            self.tableWidget.setItem(row_index, 0, name_item) # 0. Sütuna koy
+            name_item = QTableWidgetItem(name_value)
+            self.tableWidget.setItem(row_index, 0, name_item)
             
-            # --- 2. Sütun: Telefon (Phone) ---
+            # Column 1: Phone
             phone_value = client.get("phone", "-")
             phone_item = QTableWidgetItem(phone_value)
-            self.tableWidget.setItem(row_index, 1, phone_item) # 1. Sütuna koy
+            self.tableWidget.setItem(row_index, 1, phone_item)
             
-            # --- 3. Sütun: Notlar (Notes) ---
+            # Column 2: Notes
             notes_value = client.get("notes", "")
             note_item = QTableWidgetItem(notes_value)
-            self.tableWidget.setItem(row_index, 2, note_item) # 2. Sütuna koy
+            self.tableWidget.setItem(row_index, 2, note_item)
