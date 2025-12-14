@@ -10,14 +10,14 @@ CONNECTION_STRING = "mongodb+srv://admin:admin4321@cluster0.skbgf4x.mongodb.net/
 def get_database():
     """
     Establishes a connection to the MongoDB Atlas cluster
-    and returns the database object.
+    and returns the database object
     """
     try:
         # 1. Create the Client
         client = MongoClient(CONNECTION_STRING)
         
         # 2. Select the Database (Will be created automatically if not exists)
-        db = client['diyet_app']
+        db = client['diet_app']
         
         # 3. Test Connection (Ping)
         client.admin.command('ping')
