@@ -3,24 +3,39 @@ from PyQt5.uic import loadUi
 import os
 
 class MainController(QMainWindow):
-    """
-    Main Controller Class
-    ---------------------
-    This class is responsible for managing the main window logic
-    and loading the user interface created in Qt Designer.
-    """
     def __init__(self):
         super(MainController, self).__init__()
         
-        # Define the path to the UI file dynamically
-        # Uses 'os.path' to ensure compatibility across different operating systems (Windows, macOS, Linux)
-        current_dir = os.path.dirname(__file__)
-        ui_path = os.path.join(current_dir, '..', 'views', 'main_window.ui')
-        
+        # 1. TASARIMI YÜKLE (Gövdeyi Giydir)
+        ui_path = os.path.join(os.path.dirname(__file__), '..', 'views', 'main_window.ui')
         try:
-            # Load the .ui file onto this class instance
             loadUi(ui_path, self)
-            print("System Status: UI loaded successfully.")
         except Exception as e:
-            # Error handling in case the UI file is missing or corrupted
-            print(f"Critical Error: Could not load UI file. Details: {e}")
+            print(f"Hata: UI dosyası yüklenemedi! Detay: {e}")
+            return
+
+        # 2. BAŞLANGIÇ AYARLARI
+        # Açılışta hemen Dashboard sayfasını gösterelim
+        self.stackedWidget.setCurrentWidget(self.page_dashboard)
+
+        # 3. SİNYAL - SLOT BAĞLANTILARI (Kablolama)
+        # "Tıklanınca" (clicked) -> "Şunu Yap" (connect)
+        self.btn_dashboard.clicked.connect(self.show_dashboard)
+        self.btn_clients.clicked.connect(self.show_clients)
+        self.btn_diet_plans.clicked.connect(self.show_diet_plans)
+        self.btn_settings.clicked.connect(self.show_settings)
+
+    # --- AKSİYON FONKSİYONLARI ---
+    
+    def show_dashboard(self):
+        # Televizyonu 'page_dashboard' kanalına ayarla
+        self.stackedWidget.setCurrentWidget(self.page_dashboard)
+
+    def show_clients(self):
+        self.stackedWidget.setCurrentWidget(self.page_clients)
+
+    def show_diet_plans(self):
+        self.stackedWidget.setCurrentWidget(self.page_diet_plans)
+
+    def show_settings(self):
+        self.stackedWidget.setCurrentWidget(self.page_settings)
