@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView
 from PyQt5.uic import loadUi
 import os
 # Import our custom database module
@@ -65,6 +65,8 @@ class MainController(QMainWindow):
         
         # 3. Set Header Labels
         self.tableWidget.setHorizontalHeaderLabels(["Full Name", "Phone", "Notes"])
+
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # --- Populate Data ---
         # Enumerate gives us both the index (row) and the data (client)
