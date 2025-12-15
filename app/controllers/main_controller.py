@@ -46,8 +46,8 @@ class MainController(QMainWindow):
         # --- 5. CLIENT OPERATIONS (Add/Delete/Cancel/Save/Edit) ---
         #Add
         self.btn_add_new.clicked.connect(self.prepare_add_mode)
-        #Cancel
-        self.btn_cancel.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
+        #Cancel(Smart Navigation)
+        self.btn_cancel.clicked.connect(self.handle_cancel)
         #Save
         self.btn_save.clicked.connect(self.save_client)
         #Delete
@@ -312,3 +312,23 @@ class MainController(QMainWindow):
                 # 3. Switch View
                 # Show the form page, now filled with the client's data.
                 self.stackedWidget.setCurrentWidget(self.page_add_client)
+
+    def handle_cancel(self):
+        """
+        Handles the Cancel button click event with context awareness.
+        
+        Navigation Logic:
+        1. If in EDIT Mode (ID exists): Returns to the Client Detail page.
+           (User wants to see the client profile again).
+        2. If in ADD Mode (No ID): Returns to the Main Client List.
+           (User gave up on creating a new client).
+        """
+        # Context Check: Do we have a client ID in memory?
+        if self.current_client_id is not None:
+            # SCENARIO: Editing an existing client.
+            # Action: Go back to the 'Detail View' of that client.
+            self.stackedWidget.setCurrentWidget(self.page_client_detail)
+        else:
+            # SCENARIO: Adding a new client.
+            # Action: Go back to the main 'Clients Table'.
+            self.stackedWidget.setCurrentWidget(self.page_clients)
