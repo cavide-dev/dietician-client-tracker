@@ -108,52 +108,62 @@ class MainController(QMainWindow):
 
     def save_client(self):
         """
-        Reads input fields, validates data, inserts into MongoDB,
-        and refreshes the client list.
+        Saves the client. 
+        Handles INSERT (New) -> Redirects to List.
+        Handles UPDATE (Edit) -> Redirects back to Detail Page.
         """
-        
-        # 1. Get Data from Inputs
-        # .strip() removes leading/trailing whitespace
+        # 1. Gather Data
         full_name = self.txt_name.text().strip()
         phone = self.txt_phone.text().strip()
         notes = self.txt_notes.toPlainText().strip()
 
-        # 2. Validation
-        # Prevent saving if the name field is empty
         if not full_name:
             QMessageBox.warning(self, "Warning", "Name cannot be empty!")
             return
 
-        # 3. Insert into Database
         if self.db is not None:
             try:
-                new_client = {
-                    "full_name": full_name,
-                    "phone": phone,
-                    "notes": notes
-                }
-                
-                # Perform the insertion
-                self.db['clients'].insert_one(new_client)
-                
-                # Show Success Message
-                QMessageBox.information(self, "Success", "Client added successfully!")
-                
-                # 4. Cleanup & Navigation
-                # Clear the input fields for the next entry
-                self.txt_name.clear()
-                self.txt_phone.clear()
-                self.txt_notes.clear()
-                
-                # Refresh the table to show the new client
-                self.load_clients_table()
-                
-                # Navigate back to the client list
-                self.stackedWidget.setCurrentWidget(self.page_clients)
-                
+                client_data = {"full_name": full_name, "phone": phone, "notes": notes}
+
+                # --- DECISION TIME ---
+                if self.current_client_id is None:
+                    # SCENARIO 1: NEW CLIENT (INSERT)
+                    self.db['clients'].insert_one(client_data)
+                    QMessageBox.information(self, "Success", "Client added successfully!")
+                    
+                    # Logic: Clear everything and go to LIST
+                    self.prepare_add_mode() 
+                    self.load_clients_table()
+                    self.stackedWidget.setCurrentWidget(self.page_clients)
+
+                else:
+                    # SCENARIO 2: EXISTING CLIENT (UPDATE)
+                    self.db['clients'].update_one(
+                        {'_id': self.current_client_id},
+                        {'$set': client_data}
+                    )
+                    QMessageBox.information(self, "Success", "Client updated successfully!")
+                    
+                    # Logic: Update Detail View & Go back to DETAIL PAGE
+                    
+                    # A. Update the labels on the Detail Page immediately
+                    # So the user sees the changes right away without re-fetching.
+                    self.lbl_client_name.setText(full_name)
+                    self.lbl_client_phone.setText(phone)
+                    self.lbl_client_notes.setText(notes)
+                    
+                    # B. Refresh the main table in the background
+                    self.load_clients_table()
+                    
+                    # C. Go back to Detail Page (NOT the List)
+                    self.stackedWidget.setCurrentWidget(self.page_client_detail)
+                    
+                    # Note: We do NOT call prepare_add_mode() here, 
+                    # because we want to keep the current_client_id in memory 
+                    # while we are looking at the detail page.
+
             except Exception as e:
-                # Handle database errors gracefully
-                QMessageBox.critical(self, "Error", f"Could not save client: {e}")
+                QMessageBox.critical(self, "Error", f"Could not save: {e}")
 
     def delete_client(self):
         """
