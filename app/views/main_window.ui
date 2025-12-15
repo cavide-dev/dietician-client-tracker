@@ -164,7 +164,14 @@
        </widget>
       </widget>
       <widget class="QWidget" name="page_clients">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QPushButton" name="btn_add_new">
+          <property name="text">
+           <string>Add New Client</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QTableWidget" name="tableWidget"/>
         </item>
