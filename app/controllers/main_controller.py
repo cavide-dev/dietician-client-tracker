@@ -37,6 +37,10 @@ class MainController(QMainWindow):
         self.btn_clients.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
         self.btn_diet_plans.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_diet_plans))
         self.btn_settings.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_settings))
+        # Double click the list
+        self.tableWidget.cellDoubleClicked.connect(self.open_client_detail)
+        # Back to list
+        self.btn_back_to_list.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
 
         # --- 5. CLIENT OPERATIONS (Add/Delete/Cancel/Save) ---
         #Add
@@ -200,3 +204,50 @@ class MainController(QMainWindow):
                 
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Could not delete: {e}")
+
+    def open_client_detail(self, row, column):
+        """
+        Triggered when a cell is double-clicked.
+        Fetches the client data using the hidden ID and displays the Detail Page.
+
+        Args:
+            row (int): The index of the clicked row.
+            column (int): The index of the clicked column (Required by Qt signal, though unused here).
+        """
+        # 1. Retrieve the Hidden ID
+        # We always look at column 0 because that's where we hid the ID.
+        # Even if the user clicked on column 2 (Notes), we need the ID from column 0.
+        name_item = self.tableWidget.item(row, 0)
+        client_id_str = name_item.data(Qt.UserRole)
+        
+        # Safety Check: If there's no ID, stop.
+        if not client_id_str:
+            return
+
+        # 2. Fetch Data from Database
+        if self.db is not None:
+            # Convert string ID to MongoDB ObjectId
+            client = self.db['clients'].find_one({'_id': ObjectId(client_id_str)})
+            
+            if client:
+                # 3. Populate the UI Labels
+                # We use .get() to avoid errors if a field is missing.
+                
+                # Header (Big Name)
+                full_name = client.get('full_name', 'Unknown')
+                self.lbl_client_name.setText(full_name)
+                
+                # Phone Number
+                phone = client.get('phone', '-')
+                self.lbl_client_phone.setText(phone)
+                
+                # Notes (Handles long text automatically thanks to WordWrap)
+                notes = client.get('notes', 'No notes.')
+                self.lbl_client_notes.setText(notes)
+                
+                # 4. Switch the View
+                # Change the visible page to the Detail Page.
+                self.stackedWidget.setCurrentWidget(self.page_client_detail)
+                
+            else:
+                QMessageBox.warning(self, "Error", "Client not found in database!")    
