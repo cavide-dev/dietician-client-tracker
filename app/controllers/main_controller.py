@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox
 from PyQt5.uic import loadUi
+from PyQt5.QtCore import Qt  
+from bson.objectid import ObjectId 
 import os
 from app.database import get_database
 
@@ -48,6 +50,9 @@ class MainController(QMainWindow):
         # Save button triggers the data insertion logic.
         self.btn_save.clicked.connect(self.save_client)
 
+        # Delete button triggers the client deletion logic.
+        self.btn_delete.clicked.connect(self.delete_client)
+
     # --- CUSTOM FUNCTIONS ---
 
     def load_clients_table(self):
@@ -76,6 +81,10 @@ class MainController(QMainWindow):
         for row_index, client in enumerate(all_clients):
             # Get data safely (use '-' if key is missing)
             name_item = QTableWidgetItem(client.get("full_name", "-"))
+
+            client_id = str(client.get("_id"))
+            name_item.setData(Qt.UserRole, client_id)
+
             phone_item = QTableWidgetItem(client.get("phone", "-"))
             note_item = QTableWidgetItem(client.get("notes", ""))
             
@@ -132,3 +141,32 @@ class MainController(QMainWindow):
             except Exception as e:
                 # Handle database errors gracefully
                 QMessageBox.critical(self, "Error", f"Could not save client: {e}")
+
+    def delete_client(self):
+        """Deletes the selected client based on the hidden ID."""
+        # 1. Check selection
+        current_row = self.tableWidget.currentRow()
+        if current_row < 0:
+            QMessageBox.warning(self, "Warning", "Please select a row to delete!")
+            return
+            
+        # 2. Confirmation Dialog
+        reply = QMessageBox.question(self, 'Confirm Delete', 
+                                    'Are you sure you want to delete this client?',
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.No:
+            return
+
+        # 3. Get Hidden ID
+        name_item = self.tableWidget.item(current_row, 0)
+        client_id_str = name_item.data(Qt.UserRole)
+
+        # 4. Delete from MongoDB
+        if self.db is not None:
+            try:
+                self.db['clients'].delete_one({'_id': ObjectId(client_id_str)})
+                QMessageBox.information(self, "Success", "Client deleted successfully!")
+                self.load_clients_table() # Refresh table
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Could not delete: {e}")
