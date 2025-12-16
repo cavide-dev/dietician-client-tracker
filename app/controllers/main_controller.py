@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog, QMenu
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt  
 from bson.objectid import ObjectId
@@ -59,6 +59,10 @@ class MainController(QMainWindow):
 
         # --- MEASUREMENT BUTTONS ---
         self.btn_add_measurement.clicked.connect(self.open_add_measurement_dialog)
+        # Enable custom right-click menu
+        self.table_measurements.setContextMenuPolicy(Qt.CustomContextMenu)
+        # Connect the signal to our function
+        self.table_measurements.customContextMenuRequested.connect(self.show_context_menu)
 
         
     def load_clients_table(self):
@@ -462,9 +466,17 @@ class MainController(QMainWindow):
         for row_index, data in enumerate(history):
             self.table_measurements.insertRow(row_index)
             
-            # Column 0: Date
+            # Create the Date item
             date_val = data.get("date", "-")
-            self.table_measurements.setItem(row_index, 0, QTableWidgetItem(str(date_val)))
+            date_item = QTableWidgetItem(str(date_val))
+
+            # HIDDEN DATA: Store the MongoDB ID inside the item
+            # This is not visible to the user but used for deletion
+            measurement_id = str(data.get('_id'))
+            date_item.setData(Qt.UserRole, measurement_id)
+
+            # Column 0: Date
+            self.table_measurements.setItem(row_index, 0, date_item)
             
             # Column 1: Weight (kg)
             weight_val = str(data.get("weight", "-"))
@@ -494,3 +506,59 @@ class MainController(QMainWindow):
         
         # Then, set the "Notes" column (Index 5) to stretch and fill remaining space
         header.setSectionResizeMode(5, QHeaderView.Stretch)
+
+    def delete_measurement(self):
+        """
+        Deletes the selected measurement from the database after confirmation.
+        """
+        # 1. Check if a row is selected
+        current_row = self.table_measurements.currentRow()
+        if current_row < 0:
+            return
+
+        # 2. Retrieve the hidden ID from the Date column (Column 0)
+        date_item = self.table_measurements.item(current_row, 0)
+        measurement_id = date_item.data(Qt.UserRole)
+
+        if not measurement_id:
+            return
+
+        # 3. Delete from Database
+        try:
+            result = self.db['measurements'].delete_one({'_id': ObjectId(measurement_id)})
+            
+            if result.deleted_count > 0:
+                print(f"Deleted measurement ID: {measurement_id}")
+                # 4. Refresh the table to show changes
+                self.load_client_measurements()
+            else:
+                print("Error: Could not find document to delete.")
+                
+        except Exception as e:
+            print(f"Error deleting measurement: {e}")
+
+    def show_context_menu(self, position):
+        """
+        Displays a Right-Click context menu on the table.
+        Automatically selects the row under the cursor before showing the menu.
+        """
+        # 1. Identify which cell is under the mouse cursor
+        index = self.table_measurements.indexAt(position)
+
+        # 2. If the click is valid (not on empty space), select that cell
+        # This prevents accidental deletion of the wrong row
+        if index.isValid():
+            self.table_measurements.setCurrentCell(index.row(), index.column())
+        
+        # 3. Create the Context Menu
+        menu = QMenu()
+        
+        # 4. Add "Delete" action to the menu
+        delete_action = menu.addAction("Delete Measurement")
+        
+        # 5. Show the menu at the global mouse position
+        action = menu.exec_(self.table_measurements.mapToGlobal(position))
+        
+        # 6. If user clicked "Delete", trigger the delete function
+        if action == delete_action:
+            self.delete_measurement()
