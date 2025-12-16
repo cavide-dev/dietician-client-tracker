@@ -331,6 +331,41 @@
          <string>Add Measurement</string>
         </property>
        </widget>
+       <widget class="QTableWidget" name="table_measurements">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>200</y>
+          <width>511</width>
+          <height>391</height>
+         </rect>
+        </property>
+        <column>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Weight (kg)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Body Fat (%)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Muscle (kg)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Notes</string>
+         </property>
+        </column>
+       </widget>
       </widget>
       <widget class="QWidget" name="page_add_client">
        <widget class="QPushButton" name="btn_save">
