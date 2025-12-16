@@ -126,16 +126,31 @@ class MainController(QMainWindow):
         phone = self.txt_phone.text().strip()
         notes = self.txt_notes.toPlainText().strip()
 
+        try:
+            birth_date = self.date_birth_add.date().toString("yyyy-MM-dd")
+        except Exception:
+            # Olur da bir hata olursa bugünün tarihini atayalım (Çökmemesi için)
+            from PyQt5.QtCore import QDate
+            birth_date = QDate.currentDate().toString("yyyy-MM-dd")
+
         if not full_name:
             QMessageBox.warning(self, "Warning", "Name cannot be empty!")
             return
 
         if self.db is not None:
             try:
-                client_data = {"full_name": full_name, "phone": phone, "notes": notes}
+                client_data = {
+                    "full_name": full_name, 
+                    "phone": phone, 
+                    "notes": notes,
+                    "birth_date": birth_date  
+                }
 
                 # --- DECISION TIME ---
                 if self.current_client_id is None:
+
+                    client_data["created_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
                     # SCENARIO 1: NEW CLIENT (INSERT)
                     self.db['clients'].insert_one(client_data)
                     QMessageBox.information(self, "Success", "Client added successfully!")
@@ -451,61 +466,69 @@ class MainController(QMainWindow):
     def load_client_measurements(self):
         """
         Fetches the measurement history for the selected client and populates the table.
-        Adjusts column widths automatically to fit the content.
+        
+        Table Column Mapping (Based on latest design):
+        0: Date
+        1: Weight (kg)
+        2: Waist (cm)       <-- New
+        3: Body Fat (%)
+        4: Muscle (kg)
+        5: Metabolic Age    <-- Restored
+        6: BMR (kcal)       <-- New
         """
+        # 1. Validation: Ensure a client is selected
         if not self.current_client_id:
             return
 
-        # 1. Fetch history from database
+        # 2. Fetch history from database (Assuming get_client_history is defined)
         history = self.get_client_history(self.current_client_id)
         
-        # 2. Clear existing rows in the table
+        # 3. Clear existing rows in the table to prevent duplication
         self.table_measurements.setRowCount(0)
         
-        # 3. Populate the table
+        # 4. Loop through the history and populate rows
         for row_index, data in enumerate(history):
             self.table_measurements.insertRow(row_index)
             
-            # Create the Date item
+            # --- COLUMN 0: DATE (With Hidden ID) ---
             date_val = data.get("date", "-")
             date_item = QTableWidgetItem(str(date_val))
-
-            # HIDDEN DATA: Store the MongoDB ID inside the item
-            # This is not visible to the user but used for deletion
+            
+            # [CRITICAL] Store the MongoDB '_id' as hidden data for Deletion/Editing logic
             measurement_id = str(data.get('_id'))
-            date_item.setData(Qt.UserRole, measurement_id)
-
-            # Column 0: Date
+            date_item.setData(Qt.UserRole, measurement_id) 
+            
             self.table_measurements.setItem(row_index, 0, date_item)
             
-            # Column 1: Weight (kg)
+            # --- COLUMN 1: WEIGHT (kg) ---
             weight_val = str(data.get("weight", "-"))
             self.table_measurements.setItem(row_index, 1, QTableWidgetItem(weight_val))
             
-            # Column 2: Body Fat (%)
+            # --- COLUMN 2: WAIST (cm) [NEW] ---
+            # Using .get() ensures it defaults to "-" if 'waist' data doesn't exist yet
+            waist_val = str(data.get("waist", "-"))
+            self.table_measurements.setItem(row_index, 2, QTableWidgetItem(waist_val))
+            
+            # --- COLUMN 3: BODY FAT (%) ---
             fat_val = str(data.get("body_fat_ratio", "-"))
-            self.table_measurements.setItem(row_index, 2, QTableWidgetItem(fat_val))
+            self.table_measurements.setItem(row_index, 3, QTableWidgetItem(fat_val))
             
-            # Column 3: Muscle Mass (kg)
+            # --- COLUMN 4: MUSCLE MASS (kg) ---
             muscle_val = str(data.get("muscle_mass", "-"))
-            self.table_measurements.setItem(row_index, 3, QTableWidgetItem(muscle_val))
+            self.table_measurements.setItem(row_index, 4, QTableWidgetItem(muscle_val))
 
-            # Column 4: Metabolic Age
-            age_val = str(data.get("metabolic_age", "-"))
-            self.table_measurements.setItem(row_index, 4, QTableWidgetItem(age_val))
-            
-            # Column 5: Notes
-            notes_val = data.get("notes", "")
-            self.table_measurements.setItem(row_index, 5, QTableWidgetItem(notes_val))
+            # --- COLUMN 5: METABOLIC AGE ---
+            metabolic_val = str(data.get("metabolic_age", "-"))
+            self.table_measurements.setItem(row_index, 5, QTableWidgetItem(metabolic_val))
 
-        # 4. Column Resizing Logic (Fixes the "too small" issue)
+            # --- COLUMN 6: BMR (kcal) [NEW] ---
+            bmr_val = str(data.get("bmr", "-"))
+            self.table_measurements.setItem(row_index, 6, QTableWidgetItem(bmr_val))
+
+        # 5. UI Adjustment: Stretch columns to fill the table width
+        # Since we removed the "Notes" column, we can let all columns share the space evenly.
         header = self.table_measurements.horizontalHeader()
-        
-        # First, set all columns to resize based on their content
-        header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        
-        # Then, set the "Notes" column (Index 5) to stretch and fill remaining space
-        header.setSectionResizeMode(5, QHeaderView.Stretch)
+        header.setSectionResizeMode(QHeaderView.Stretch)
 
     def delete_measurement(self):
         """
