@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt  
 from bson.objectid import ObjectId
 from datetime import datetime
-import os
 from app.database import get_database
+from app.views.measurement_dialog import MeasurementDialog
+import os
 
 class MainController(QMainWindow):
     def __init__(self):
@@ -55,6 +56,9 @@ class MainController(QMainWindow):
         self.btn_delete.clicked.connect(self.delete_client)
         #Edit
         self.btn_edit.clicked.connect(self.prepare_edit_mode)
+
+        # --- MEASUREMENT BUTTONS ---
+        self.btn_add_measurement.clicked.connect(self.open_add_measurement_dialog)
 
         
     def load_clients_table(self):
@@ -410,3 +414,29 @@ class MainController(QMainWindow):
         except Exception as e:
             print(f"Error adding measurement: {e}")
             return False
+        
+    def open_add_measurement_dialog(self):
+        """
+        Opens the popup window to add a new measurement for the selected client.
+        Checks if a client is selected, opens the dialog, and saves the data if confirmed.
+        """
+        if not self.current_client_id:
+            print("Error: No client selected.")
+            return
+
+        # Initialize the dialog with the current controller as parent
+        dialog = MeasurementDialog(self)
+        
+        # Execute the dialog and wait for user action (Save or Cancel)
+        if dialog.exec_() == QDialog.Accepted:
+            # Retrieve data from the dialog form
+            data = dialog.get_data()
+            
+            # Attempt to save the data to the database
+            success = self.add_measurement_entry(self.current_client_id, data)
+            
+            if success:
+                print("Measurement saved successfully.")
+                # TODO: Refresh the measurements list (to be implemented)
+            else:
+                print("Failed to save measurement.")
