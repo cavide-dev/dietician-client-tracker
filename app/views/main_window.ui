@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QFrame" name="frame">
       <property name="maximumSize">
        <size>
@@ -138,7 +138,7 @@
       </layout>
      </widget>
     </item>
-    <item>
+    <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
        <number>2</number>
@@ -192,190 +192,132 @@
        </layout>
       </widget>
       <widget class="QWidget" name="page_client_detail">
-       <widget class="QPushButton" name="btn_back_to_list">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>10</y>
-          <width>93</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Back</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="lbl_client_name">
-        <property name="geometry">
-         <rect>
-          <x>210</x>
-          <y>10</y>
-          <width>291</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>MS UI Gothic</family>
-          <pointsize>24</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Client Detail</string>
-        </property>
-       </widget>
-       <widget class="Line" name="line">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>60</y>
-          <width>651</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_2">
-        <property name="geometry">
-         <rect>
-          <x>40</x>
-          <y>90</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Phone Numer:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="lbl_client_phone">
-        <property name="geometry">
-         <rect>
-          <x>150</x>
-          <y>90</y>
-          <width>91</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>....</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_5">
-        <property name="geometry">
-         <rect>
-          <x>40</x>
-          <y>130</y>
-          <width>91</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Notes:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="lbl_client_notes">
-        <property name="geometry">
-         <rect>
-          <x>130</x>
-          <y>120</y>
-          <width>441</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>....</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="btn_edit">
-        <property name="geometry">
-         <rect>
-          <x>570</x>
-          <y>10</y>
-          <width>93</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string>Edit Client</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="btn_add_measurement">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>100</y>
-          <width>221</width>
-          <height>51</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string>Add Measurement</string>
-        </property>
-       </widget>
-       <widget class="QTableWidget" name="table_measurements">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>190</y>
-          <width>751</width>
-          <height>401</height>
-         </rect>
-        </property>
-        <column>
-         <property name="text">
-          <string>Date</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Weight (kg)</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Waist (cm)</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Body Fat (%)</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Muscle (kg)</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Metabolic Age</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>BMR (kcal)</string>
-         </property>
-        </column>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="btn_back_to_list">
+          <property name="text">
+           <string>Back</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2" colspan="2">
+         <widget class="QLabel" name="lbl_client_name">
+          <property name="font">
+           <font>
+            <family>MS UI Gothic</family>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Client Detail</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QPushButton" name="btn_edit">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="text">
+           <string>Edit Client</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="5">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Phone Numer:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="lbl_client_phone">
+          <property name="text">
+           <string>....</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3" colspan="2">
+         <widget class="QPushButton" name="btn_add_measurement">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="text">
+           <string>Add Measurement</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Notes:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="3">
+         <widget class="QLabel" name="lbl_client_notes">
+          <property name="text">
+           <string>....</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="5">
+         <widget class="QTableWidget" name="table_measurements">
+          <column>
+           <property name="text">
+            <string>Date</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Weight (kg)</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Waist (cm)</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Body Fat (%)</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Muscle (kg)</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Metabolic Age</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>BMR (kcal)</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="page_add_client">
        <widget class="QPushButton" name="btn_save">
