@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from app.database import get_database
 from app.views.measurement_dialog import MeasurementDialog
+from app.views.stats_card_widget import StatsCard, StatsCardContainer
 import os
 import sys
 import pymongo
