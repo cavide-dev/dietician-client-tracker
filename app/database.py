@@ -1,34 +1,39 @@
-from pymongo import MongoClient
+import os
 import sys
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# ---------------------------------------------------------
-# CONNECTION SETTINGS
-# ---------------------------------------------------------
-# Note: In a real production app, passwords should be in environment variables.
-CONNECTION_STRING = "mongodb+srv://admin:admin4321@cluster0.skbgf4x.mongodb.net/?appName=Cluster0"
+# 1. Load Environment Variables
+# This searches for the .env file and loads the variables inside it.
+load_dotenv()
+
+# 2. Get the Password safely
+# We fetch the 'MONGO_URI' variable from the loaded environment.
+# This way, your password is never written explicitly in the code.
+uri = os.getenv("MONGO_URI")
+
+# Security Check: If the .env file is missing or empty, stop the app.
+if not uri:
+    print("ERROR: 'MONGO_URI' not found! Please check your .env file.")
+    sys.exit(1)
 
 def get_database():
     """
-    Establishes a connection to the MongoDB Atlas cluster
-    and returns the database object
+    Establishes a connection to the MongoDB Atlas cluster securely.
+    Returns the database object to be used in the app.
     """
     try:
-        # 1. Create the Client
-        client = MongoClient(CONNECTION_STRING)
+        # 3. Connect using the secure URI
+        client = MongoClient(uri)
         
-        # 2. Select the Database (Will be created automatically if not exists)
-        db = client['diet_app']
-        
-        # 3. Test Connection (Ping)
+        # 4. Test the connection (Ping)
         client.admin.command('ping')
         print("SUCCESS: Connected to MongoDB Atlas successfully!")
         
+        # 5. Select your specific database
+        db = client['diet_app'] 
         return db
-
+        
     except Exception as e:
-        print(f"ERROR: Connection failed. Reason: {e}")
+        print(f"FAILED: Could not connect to MongoDB. Error: {e}")
         return None
-
-# Test Block: Runs only when this file is executed directly
-if __name__ == "__main__":
-    get_database()
