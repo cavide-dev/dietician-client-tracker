@@ -40,13 +40,13 @@ class MainController(QMainWindow):
         self.current_client_id = None
         
         self.current_diet_id = None  # For tracking which diet is being edited
-
+        self.stats_container = None  # Stats container'ı memory'de tut
         # 3. Initial Setup
         # Show the dashboard page by default on startup.
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
         # Load the table data
         self.load_clients_table()
-
+        
         # --- 4. NAVIGATION BUTTONS (Menu Connections) ---
         self.btn_dashboard.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_dashboard))
         self.btn_clients.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
@@ -330,15 +330,72 @@ class MainController(QMainWindow):
                 # Notes (Handles long text automatically thanks to WordWrap)
                 notes = client.get('notes', 'No notes.')
                 self.lbl_client_notes.setText(notes)
+
+                # Age label (calculated from birth date)
+                birth_date = client.get('birth_date', '')
+                if birth_date:
+                    age = self.calculate_age(birth_date)
+                    if age is not None:
+                        self.lbl_age.setText(f"Age: {age}")
+                    else:
+                        self.lbl_age.setText("Age: -")
+                else:
+                    self.lbl_age.setText("Age: -")
                 
                 # 4. Switch the View
                 # Change the visible page to the Detail Page.
                 self.stackedWidget.setCurrentWidget(self.page_client_detail)
+                # Eski Stats Cards'ı temizle
+                if self.stats_container is not None:
+                    self.stats_container.clear_cards()
+                    tab_overview = self.tabWidget.widget(0)
+                    tab_overview.layout().removeWidget(self.stats_container)
+                    self.stats_container.deleteLater()
+                    self.stats_container = None
+                                
                 # Refresh the measurements list
                 self.load_client_measurements()
-                
+                # Stats Cards - Compare last 2 measurements
+                measurements = self.get_client_history(self.current_client_id)
+                if len(measurements) >= 2:
+                    latest = measurements[0]  # Most recent
+                    previous = measurements[1]  # Previous one
+                    
+                    # Calculate changes
+                    weight_change = latest.get('weight', 0) - previous.get('weight', 0)
+                    fat_change = latest.get('body_fat_ratio', 0) - previous.get('body_fat_ratio', 0)
+                    muscle_change = latest.get('muscle_mass', 0) - previous.get('muscle_mass', 0)
+                    
+                    # Create stats container
+                    self.stats_container = StatsCardContainer()  # ← self. ekle
+                    self.stats_container.add_stats_card("Weight", f"{latest.get('weight', 0)}", weight_change, " kg")
+                    self.stats_container.add_stats_card("Body Fat", f"{latest.get('body_fat_ratio', 0)}", fat_change, "%")
+                    self.stats_container.add_stats_card("Muscle", f"{latest.get('muscle_mass', 0)}", muscle_change, " kg")
+
+                    # Add to tab_overview (first tab of tabWidget)
+                    self.tabWidget.widget(0).layout().insertWidget(0, self.stats_container)  # ← self. ekle
+                                
             else:
-                QMessageBox.warning(self, "Error", "Client not found in database!")    
+                QMessageBox.warning(self, "Error", "Client not found in database!")
+
+    def calculate_age(self, birth_date_str):
+        """
+        Calculate age from birth date string (format: yyyy-MM-dd).
+        
+        Args:
+            birth_date_str (str): Birth date in yyyy-MM-dd format
+            
+        Returns:
+            int: Age in years, or None if calculation fails
+        """
+        from datetime import datetime
+        try:
+            birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
+            today = datetime.today()
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+            return age
+        except:
+            return None    
 
     def prepare_add_mode(self):
         """
