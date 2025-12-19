@@ -348,44 +348,54 @@ class MainController(QMainWindow):
                 # Change the visible page to the Detail Page.
                 self.stackedWidget.setCurrentWidget(self.page_client_detail)
                 # Eski Stats Cards'ı temizle
+                tab_overview = self.tabWidget.widget(0)
                 if self.stats_container is not None:
                     self.stats_container.clear_cards()
-                    tab_overview = self.tabWidget.widget(0)
                     tab_overview.layout().removeWidget(self.stats_container)
                     self.stats_container.deleteLater()
                     self.stats_container = None
                                 
                 # Refresh the measurements list
                 self.load_client_measurements()
+
                 # Stats Cards - Compare last 2 measurements
                 measurements = self.get_client_history(self.current_client_id)
+                # Stats Cards - update or create
                 if len(measurements) >= 2:
-                    latest = measurements[0]  # Most recent
-                    previous = measurements[1]  # Previous one
+                    self.stats_container = StatsCardContainer()
+                    tab_overview.layout().insertWidget(0, self.stats_container)
                     
-                    # Calculate changes
+                    latest = measurements[0]
+                    previous = measurements[1]
+                    
                     weight_change = latest.get('weight', 0) - previous.get('weight', 0)
                     fat_change = latest.get('body_fat_ratio', 0) - previous.get('body_fat_ratio', 0)
                     muscle_change = latest.get('muscle_mass', 0) - previous.get('muscle_mass', 0)
                     
-                    # Create stats container
-                    self.stats_container = StatsCardContainer()  # ← self. ekle
                     self.stats_container.add_stats_card("Weight", f"{latest.get('weight', 0)}", weight_change, " kg")
                     self.stats_container.add_stats_card("Body Fat", f"{latest.get('body_fat_ratio', 0)}", fat_change, "%")
                     self.stats_container.add_stats_card("Muscle", f"{latest.get('muscle_mass', 0)}", muscle_change, " kg")
-
-                    # Add to tab_overview (first tab of tabWidget)
-                    self.tabWidget.widget(0).layout().insertWidget(0, self.stats_container)
-
-                  # Create and display trend chart
-                if self.trend_chart is not None:
-                    self.trend_chart.plot_trends([])  # Clear
+                    
+                    self.stats_container.update()
+                    tab_overview.update()
                 else:
-                    self.trend_chart = TrendChart()
-                    self.tabWidget.widget(0).layout().insertWidget(1, self.trend_chart)  # Insert after stats
-
-                self.trend_chart.plot_trends(measurements) 
-                           
+                    if self.stats_container is not None:
+                        tab_overview.layout().removeWidget(self.stats_container)
+                        self.stats_container.deleteLater()
+                        self.stats_container = None
+                
+                # Trend chart - DELETE OLD, CREATE NEW
+                if self.trend_chart is not None:
+                    tab_overview.layout().removeWidget(self.trend_chart)
+                    self.trend_chart.deleteLater()
+                    self.trend_chart = None
+                
+                self.trend_chart = TrendChart()
+                tab_overview.layout().insertWidget(1, self.trend_chart)
+                self.trend_chart.plot_trends(measurements)
+                
+                # Final force update
+                tab_overview.update()
             else:
                 QMessageBox.warning(self, "Error", "Client not found in database!")
 
@@ -585,8 +595,54 @@ class MainController(QMainWindow):
             
             if success:
                 print("Measurement saved successfully.")
-                # Refresh the measurements list
+                # Refresh the measurements list (Tab 2)
                 self.load_client_measurements()
+                
+                # REFRESH TAB 1 - Stats and Chart
+                measurements = self.get_client_history(self.current_client_id)
+                tab_overview = self.tabWidget.widget(0)
+                
+                # Remove old Stats container and force layout update
+                if self.stats_container is not None:
+                    tab_overview.layout().removeWidget(self.stats_container)
+                    self.stats_container.deleteLater()
+                    self.stats_container = None
+                    tab_overview.layout().update()  # Force layout update
+                
+                # Recreate Stats container if we have enough data
+                if len(measurements) >= 2:
+                    self.stats_container = StatsCardContainer()
+                    tab_overview.layout().insertWidget(0, self.stats_container)
+                    
+                    latest = measurements[0]
+                    previous = measurements[1]
+                    
+                    weight_change = latest.get('weight', 0) - previous.get('weight', 0)
+                    fat_change = latest.get('body_fat_ratio', 0) - previous.get('body_fat_ratio', 0)
+                    muscle_change = latest.get('muscle_mass', 0) - previous.get('muscle_mass', 0)
+                    
+                    self.stats_container.add_stats_card("Weight", f"{latest.get('weight', 0)}", weight_change, " kg")
+                    self.stats_container.add_stats_card("Body Fat", f"{latest.get('body_fat_ratio', 0)}", fat_change, "%")
+                    self.stats_container.add_stats_card("Muscle", f"{latest.get('muscle_mass', 0)}", muscle_change, " kg")
+                    
+                    # Force widget repaint
+                    self.stats_container.update()
+                    tab_overview.update()
+                
+                # Remove old Chart and recreate
+                if self.trend_chart is not None:
+                    tab_overview.layout().removeWidget(self.trend_chart)
+                    self.trend_chart.deleteLater()
+                    self.trend_chart = None
+                    tab_overview.layout().update()  # Force layout update
+                
+                self.trend_chart = TrendChart()
+                tab_overview.layout().insertWidget(1, self.trend_chart)
+                self.trend_chart.plot_trends(measurements)
+                
+                # Final force update
+                tab_overview.update()
+                self.tabWidget.widget(0).update()
             else:
                 print("Failed to save measurement.")
 
@@ -614,8 +670,11 @@ class MainController(QMainWindow):
         self.table_measurements.setRowCount(0)
         
         # 4. Loop through the history and populate rows
-        for row_index, data in enumerate(history):
-            self.table_measurements.insertRow(row_index)
+        # NOTE: history is already sorted by date DESC (newest first) from get_client_history()
+        # But we need to insert all rows at index 0 to keep newest at the TOP visually
+        # This way each new row pushes older rows down
+        for data in reversed(history):  # Reverse to get oldest first, then newest will be inserted at top
+            self.table_measurements.insertRow(0)  # Always insert at top
             
             # --- COLUMN 0: DATE (With Hidden ID) ---
             date_val = data.get("date", "-")
@@ -625,32 +684,32 @@ class MainController(QMainWindow):
             measurement_id = str(data.get('_id'))
             date_item.setData(Qt.UserRole, measurement_id) 
             
-            self.table_measurements.setItem(row_index, 0, date_item)
+            self.table_measurements.setItem(0, 0, date_item)
             
             # --- COLUMN 1: WEIGHT (kg) ---
             weight_val = str(data.get("weight", "-"))
-            self.table_measurements.setItem(row_index, 1, QTableWidgetItem(weight_val))
+            self.table_measurements.setItem(0, 1, QTableWidgetItem(weight_val))
             
             # --- COLUMN 2: WAIST (cm) [NEW] ---
             # Using .get() ensures it defaults to "-" if 'waist' data doesn't exist yet
             waist_val = str(data.get("waist", "-"))
-            self.table_measurements.setItem(row_index, 2, QTableWidgetItem(waist_val))
+            self.table_measurements.setItem(0, 2, QTableWidgetItem(waist_val))
             
             # --- COLUMN 3: BODY FAT (%) ---
             fat_val = str(data.get("body_fat_ratio", "-"))
-            self.table_measurements.setItem(row_index, 3, QTableWidgetItem(fat_val))
+            self.table_measurements.setItem(0, 3, QTableWidgetItem(fat_val))
             
             # --- COLUMN 4: MUSCLE MASS (kg) ---
             muscle_val = str(data.get("muscle_mass", "-"))
-            self.table_measurements.setItem(row_index, 4, QTableWidgetItem(muscle_val))
+            self.table_measurements.setItem(0, 4, QTableWidgetItem(muscle_val))
 
             # --- COLUMN 5: METABOLIC AGE ---
             metabolic_val = str(data.get("metabolic_age", "-"))
-            self.table_measurements.setItem(row_index, 5, QTableWidgetItem(metabolic_val))
+            self.table_measurements.setItem(0, 5, QTableWidgetItem(metabolic_val))
 
             # --- COLUMN 6: BMR (kcal) [NEW] ---
             bmr_val = str(data.get("bmr", "-"))
-            self.table_measurements.setItem(row_index, 6, QTableWidgetItem(bmr_val))
+            self.table_measurements.setItem(0, 6, QTableWidgetItem(bmr_val))
 
        # --- TABLE STYLING ---
         header = self.table_measurements.horizontalHeader()
@@ -673,6 +732,7 @@ class MainController(QMainWindow):
     def delete_measurement(self):
         """
         Deletes the selected measurement from the database after confirmation.
+        After deletion, refreshes Tab 1 (Stats and Chart) and Tab 2 (Measurements table).
         """
         # 1. Check if a row is selected
         current_row = self.table_measurements.currentRow()
@@ -698,8 +758,54 @@ class MainController(QMainWindow):
 
             if result.deleted_count > 0:
                 print(f"Deleted measurement ID: {measurement_id}")
-                # 4. Refresh the table to show changes
+                
+                # 4. Refresh Tab 2 (Measurements table)
                 self.load_client_measurements()
+                
+                # 5. Refresh Tab 1 (Stats and Chart)
+                measurements = self.get_client_history(self.current_client_id)
+                tab_overview = self.tabWidget.widget(0)
+                
+                # Remove old Stats container
+                if self.stats_container is not None:
+                    tab_overview.layout().removeWidget(self.stats_container)
+                    self.stats_container.deleteLater()
+                    self.stats_container = None
+                    tab_overview.layout().update()
+                
+                # Recreate Stats container if we have enough data
+                if len(measurements) >= 2:
+                    self.stats_container = StatsCardContainer()
+                    tab_overview.layout().insertWidget(0, self.stats_container)
+                    
+                    latest = measurements[0]
+                    previous = measurements[1]
+                    
+                    weight_change = latest.get('weight', 0) - previous.get('weight', 0)
+                    fat_change = latest.get('body_fat_ratio', 0) - previous.get('body_fat_ratio', 0)
+                    muscle_change = latest.get('muscle_mass', 0) - previous.get('muscle_mass', 0)
+                    
+                    self.stats_container.add_stats_card("Weight", f"{latest.get('weight', 0)}", weight_change, " kg")
+                    self.stats_container.add_stats_card("Body Fat", f"{latest.get('body_fat_ratio', 0)}", fat_change, "%")
+                    self.stats_container.add_stats_card("Muscle", f"{latest.get('muscle_mass', 0)}", muscle_change, " kg")
+                    
+                    self.stats_container.update()
+                    tab_overview.update()
+                
+                # Remove old Chart and recreate
+                if self.trend_chart is not None:
+                    tab_overview.layout().removeWidget(self.trend_chart)
+                    self.trend_chart.deleteLater()
+                    self.trend_chart = None
+                    tab_overview.layout().update()
+                
+                self.trend_chart = TrendChart()
+                tab_overview.layout().insertWidget(1, self.trend_chart)
+                self.trend_chart.plot_trends(measurements)
+                
+                # Final force update
+                tab_overview.update()
+                
             else:
                 print("Error: Could not find document to delete.")
                 

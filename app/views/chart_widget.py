@@ -18,11 +18,11 @@ class TrendChart(QWidget):
         """Initialize the UI layout for the chart"""
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
+        self.setMaximumHeight(400)
         self.setLayout(layout)
         
         # Will add canvas here later
         self.canvas = None
-
     def plot_trends(self, measurements):
         """
         Plot measurement trends.
@@ -51,12 +51,19 @@ class TrendChart(QWidget):
             body_fats.append(measurement.get('body_fat_ratio', 0))
             muscles.append(measurement.get('muscle_mass', 0))
         
+        # ===== Clear previous widgets =====
+        while self.layout().count():
+            widget = self.layout().takeAt(0).widget()
+            if widget:
+                widget.deleteLater()
+        self.canvas = None
+        
         # ===== ADIM 3: Create Figure =====
         if self.canvas is not None:
             self.layout().removeWidget(self.canvas)
             self.canvas.deleteLater()
         
-        figure = Figure(figsize=(8, 5), dpi=100)
+        figure = Figure(figsize=(8, 4), dpi=100)
         
         # ===== PROBLEM 2: Two Y-axes =====
         ax1 = figure.add_subplot(111)
@@ -75,11 +82,11 @@ class TrendChart(QWidget):
         ax2.tick_params(axis='y', labelcolor='r')
         
         # ===== Labels & Title =====
-        ax1.set_xlabel('Date', fontsize=10, fontweight='bold')
+        ax1.set_xlabel('', fontsize=10, fontweight='bold')
         ax1.set_title('Measurement Trends', fontsize=12, fontweight='bold')
         
         # ===== Rotate X-axis labels =====
-        figure.autofmt_xdate(rotation=45, ha='right')
+        figure.autofmt_xdate(rotation=30, ha='right')
         
         # ===== Combine legends =====
         lines1, labels1 = ax1.get_legend_handles_labels()
@@ -93,12 +100,13 @@ class TrendChart(QWidget):
     def show_empty_state(self):
         """Display message when not enough data for chart"""
         # Clear previous canvas
-        if self.canvas is not None:
-            self.layout().removeWidget(self.canvas)
-            self.canvas.deleteLater()
-            self.canvas = None
-        
+        # Clear all widgets from layout
+        while self.layout().count():
+            widget = self.layout().takeAt(0).widget()
+            if widget:
+                widget.deleteLater()
+        self.canvas = None
         # Show message
         empty_label = QLabel("Need at least 2 measurements to display chart")
         empty_label.setStyleSheet("color: #999; font-style: italic;")
-        self.layout().insertWidget(0, empty_label)
+        self.layout().addWidget(empty_label)
