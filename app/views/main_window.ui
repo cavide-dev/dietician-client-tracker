@@ -243,7 +243,7 @@
           </property>
           <widget class="QWidget" name="tab_overview">
            <attribute name="title">
-            <string>Tab 1</string>
+            <string>Overview</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
@@ -296,7 +296,7 @@
           </widget>
           <widget class="QWidget" name="tab_measurements">
            <attribute name="title">
-            <string>Tab 2</string>
+            <string>Measurements</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
