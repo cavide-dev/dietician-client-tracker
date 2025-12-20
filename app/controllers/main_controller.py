@@ -61,7 +61,8 @@ class MainController(QMainWindow):
         self.tableWidget.cellDoubleClicked.connect(self.open_client_detail)
         # Back to list
         self.btn_back_to_list.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
-
+        # Search bar connection
+        self.search_clients.textChanged.connect(self.filter_clients_by_search)
         # --- 5. CLIENT OPERATIONS (Add/Delete/Cancel/Save/Edit) ---
         #Add
         self.btn_add_new.clicked.connect(self.prepare_add_mode)
@@ -156,6 +157,27 @@ class MainController(QMainWindow):
             note_value = client.get("notes", "")
             note_item = QTableWidgetItem(note_value)
             self.tableWidget.setItem(row_index, 2, note_item)
+
+    def filter_clients_by_search(self, search_text):
+        """
+        Filters the clients table based on search input (real-time).
+        Shows/hides rows matching the search term in client names.
+        """
+        search_text = search_text.lower().strip()
+        
+        for row in range(self.tableWidget.rowCount()):
+            # Get the client name from column 0
+            name_item = self.tableWidget.item(row, 0)
+            if name_item:
+                client_name = name_item.text().lower()
+                # Show row if matches search, hide otherwise
+                if search_text in client_name:
+                    self.tableWidget.setRowHidden(row, False)
+                else:
+                    self.tableWidget.setRowHidden(row, True)
+            else:
+                # If no name found, hide the row
+                self.tableWidget.setRowHidden(row, True)
 
     def save_client(self):
         """
