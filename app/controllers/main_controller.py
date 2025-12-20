@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog, QMenu
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog, QMenu, QLabel
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt, QDate 
 from bson.objectid import ObjectId
@@ -43,6 +43,8 @@ class MainController(QMainWindow):
         self.current_diet_id = None  # For tracking which diet is being edited
         self.stats_container = None  # Will hold the Stats container
         self.trend_chart = None  # Will hold the chart widget
+        self.empty_state_diet = None  # Will hold the empty state widget
+        self.empty_state_measurements = None  # Will hold the empty state widget for measurements
         # 3. Initial Setup
         # Show the dashboard page by default on startup.
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
@@ -299,6 +301,7 @@ class MainController(QMainWindow):
         # 1. Retrieve the Hidden ID
         # We always look at column 0 because that's where we hid the ID.
         # Even if the user clicked on column 2 (Notes), we need the ID from column 0.
+        self.hide_measurements_empty_state()  # Show measurements table when opening client detail
         name_item = self.tableWidget.item(row, 0)
         client_id_str = name_item.data(Qt.UserRole)
         
@@ -347,7 +350,7 @@ class MainController(QMainWindow):
                 # 4. Switch the View
                 # Change the visible page to the Detail Page.
                 self.stackedWidget.setCurrentWidget(self.page_client_detail)
-                # Eski Stats Cards'ı temizle
+                # Clear the old Stats Cards
                 tab_overview = self.tabWidget.widget(0)
                 if self.stats_container is not None:
                     self.stats_container.clear_cards()
@@ -479,6 +482,7 @@ class MainController(QMainWindow):
             # SCENARIO: Editing an existing client.
             # Action: Go back to the 'Detail View' of that client.
             self.stackedWidget.setCurrentWidget(self.page_client_detail)
+
         else:
             # SCENARIO: Adding a new client.
             # Action: Go back to the main 'Clients Table'.
@@ -659,6 +663,7 @@ class MainController(QMainWindow):
         5: Metabolic Age    <-- Restored
         6: BMR (kcal)       <-- New
         """
+        self.hide_measurements_empty_state()  # Show the table
         # 1. Validation: Ensure a client is selected
         if not self.current_client_id:
             return
@@ -727,6 +732,10 @@ class MainController(QMainWindow):
         self.table_measurements.setAlternatingRowColors(True)
         self.table_measurements.verticalHeader().setVisible(False)
         self.table_measurements.setShowGrid(True)
+
+        # If no measurements were loaded, show empty state
+        if self.table_measurements.rowCount() == 0:
+            self.show_measurements_empty_state()
 
 
     def delete_measurement(self):
@@ -962,6 +971,67 @@ class MainController(QMainWindow):
         except Exception as e:
             print(f"Error loading client dropdown: {e}")
 
+        # Reset dropdown to "Select Client..." on load
+        self.cmb_client_select.setCurrentIndex(0)
+    
+    def show_diet_empty_state(self):
+        """
+        Shows a centered empty state message in the diet list area.
+        """
+        # Clear the table first
+        self.table_diet_history.setRowCount(0)
+        
+        # Create empty state widget if it doesn't exist
+        if self.empty_state_diet is None:
+            self.empty_state_diet = QLabel("👤 Select a client to view diet plans")
+            self.empty_state_diet.setAlignment(Qt.AlignCenter)
+            self.empty_state_diet.setStyleSheet("""
+                color: #999999;
+                font-size: 14px;
+                padding: 50px;
+            """)
+            # Get the parent layout and insert before table
+            layout = self.table_diet_history.parent().layout()
+            table_index = layout.indexOf(self.table_diet_history)
+            layout.insertWidget(table_index, self.empty_state_diet)
+            
+        self.table_diet_history.hide()
+        self.empty_state_diet.show()
+
+    def hide_diet_empty_state(self):
+        """
+        Hides the empty state widget and shows the table.
+        """
+        if self.empty_state_diet is not None:
+            self.empty_state_diet.hide()
+        # Always show the table
+        self.table_diet_history.show()
+
+    def show_measurements_empty_state(self):
+        """Show empty state for measurements, hide table"""
+        if self.empty_state_measurements is None:
+            self.empty_state_measurements = QLabel("📊 No measurements recorded. Add your first measurement to get started.")
+            self.empty_state_measurements.setAlignment(Qt.AlignCenter)
+            self.empty_state_measurements.setStyleSheet("""
+                color: #999999;
+                font-size: 16px;
+                padding: 100px;
+            """)
+            # Get the parent layout and insert before table
+            layout = self.table_measurements.parent().layout()
+            table_index = layout.indexOf(self.table_measurements)
+            layout.insertWidget(table_index, self.empty_state_measurements)
+    
+        self.table_measurements.hide()
+        self.empty_state_measurements.show()
+
+    def hide_measurements_empty_state(self):
+        """Hide empty state for measurements, show table"""
+        if self.empty_state_measurements is not None:
+            self.empty_state_measurements.hide()
+        # Always show the table
+        self.table_measurements.show()
+    
     def update_selected_client_from_dropdown(self, index):
         """
         Triggered when the user selects a name from the dropdown.
@@ -973,11 +1043,12 @@ class MainController(QMainWindow):
         if client_id:
             self.current_client_id = client_id
             print(f"Active Client Changed to: {self.current_client_id}")
-
-            self.load_client_diet_plans()
+            self.hide_diet_empty_state()  # Hide the empty state first
+            self.load_client_diet_plans() # Then load table data
         else:
             # If "Select Client..." is chosen, reset the ID
             self.current_client_id = None
+            self.show_diet_empty_state()  # Show placeholder
     
     def load_client_diet_plans(self):
         """
@@ -1054,6 +1125,8 @@ class MainController(QMainWindow):
             self.stack_diet_sub.setCurrentIndex(0)
         except Exception as e:
             print(f"Error resetting diet sub-stack: {e}")
+        
+        self.show_diet_empty_state()  # Show empty state on page entry
 
     def init_ui_logic(self):
         """
@@ -1262,3 +1335,6 @@ class MainController(QMainWindow):
         
         # Go to form page
         self.stack_diet_sub.setCurrentIndex(1)
+
+
+
