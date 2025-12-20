@@ -81,6 +81,8 @@ class MainController(QMainWindow):
         self.table_measurements.setContextMenuPolicy(Qt.CustomContextMenu)
         # Connect the signal to our function
         self.table_measurements.customContextMenuRequested.connect(self.show_context_menu)
+        # Double-click to edit measurement
+        self.table_measurements.cellDoubleClicked.connect(self.open_edit_measurement_dialog)
         
         
         # DIET PAGE CONNECTIONS 
@@ -673,6 +675,86 @@ class MainController(QMainWindow):
             else:
                 print("Failed to save measurement.")
 
+    def open_edit_measurement_dialog(self, row, column):
+        """
+        Opens the measurement dialog in edit mode for the selected row.
+        Fetches existing data and allows user to update it.
+        """
+        if not self.current_client_id:
+            return
+        
+        try:
+            # Get measurement ID from hidden UserRole in first column
+            id_item = self.table_measurements.item(row, 0)
+            if not id_item:
+                return
+            
+            measurement_id_str = id_item.data(Qt.UserRole)
+            if not measurement_id_str:
+                return
+            
+            # Fetch measurement from database
+            measurement = self.db['measurements'].find_one({"_id": ObjectId(measurement_id_str)})
+            
+            if not measurement:
+                return
+            
+            # Prepare data for dialog (convert ObjectId and datetime to Python types)
+            measurement_data = {
+                'date': self._parse_date_value(measurement.get('date', datetime.now())),
+                'weight': measurement.get('weight', 0),
+                'height': measurement.get('height', 0),
+                'body_fat': measurement.get('body_fat', 0),
+                'muscle': measurement.get('muscle', 0),
+                'metabolic_age': measurement.get('metabolic_age', 0),
+                'bmr': measurement.get('bmr', 0),
+                'visceral_fat': measurement.get('visceral_fat', 0),
+                'water_ratio': measurement.get('water_ratio', 0),
+                'waist': measurement.get('waist', 0),
+                'hip': measurement.get('hip', 0),
+                'chest': measurement.get('chest', 0),
+                'arm': measurement.get('arm', 0),
+                'thigh': measurement.get('thigh', 0),
+                'notes': measurement.get('notes', ''),
+                '_id': measurement_id_str  # Store ID for update
+            }
+            
+            # Open dialog in edit mode
+            dialog = MeasurementDialog(self, measurement_data)
+            
+            if dialog.exec_() == QDialog.Accepted:
+                # Get updated values from dialog
+                updated_data = {
+                    'weight': dialog.input_weight.value(),
+                    'height': dialog.input_height.value(),
+                    'body_fat': dialog.input_fat.value(),
+                    'muscle': dialog.input_muscle.value(),
+                    'metabolic_age': int(dialog.input_metabolic_age.value()),
+                    'bmr': int(dialog.input_bmr.value()),
+                    'visceral_fat': dialog.input_visceral.value(),
+                    'water_ratio': dialog.input_water.value(),
+                    'waist': dialog.input_waist.value(),
+                    'hip': dialog.input_hip.value(),
+                    'chest': dialog.input_chest.value(),
+                    'arm': dialog.input_arm.value(),
+                    'thigh': dialog.input_thigh.value(),
+                    'notes': dialog.input_notes.toPlainText()
+                }
+                
+                # Update database
+                self.db['measurements'].update_one(
+                    {"_id": ObjectId(measurement_id_str)},
+                    {"$set": updated_data}
+                )
+                
+                # Refresh everything
+                self.load_client_measurements()
+                self.refresh_stats_and_chart()
+                
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Could not edit measurement: {e}")
+            print(f"Error in open_edit_measurement_dialog: {e}")
+
     def load_client_measurements(self):
         """
         Fetches the measurement history for the selected client and populates the table.
@@ -706,7 +788,13 @@ class MainController(QMainWindow):
             
             # --- COLUMN 0: DATE (With Hidden ID) ---
             date_val = data.get("date", "-")
-            date_item = QTableWidgetItem(str(date_val))
+            # Format date properly
+            if isinstance(date_val, datetime):
+                date_str = date_val.strftime("%Y-%m-%d")
+            else:
+                date_str = str(date_val)
+            date_item = QTableWidgetItem(date_str)
+
             
             # [CRITICAL] Store the MongoDB '_id' as hidden data for Deletion/Editing logic
             measurement_id = str(data.get('_id'))
@@ -843,6 +931,54 @@ class MainController(QMainWindow):
                 
         except Exception as e:
             print(f"Error deleting measurement: {e}")
+
+    def refresh_stats_and_chart(self):
+        """
+        Helper function to refresh both Stats Cards and Trend Chart.
+        Called after measurement add/edit/delete operations.
+        """
+        measurements = self.get_client_history(self.current_client_id)
+        tab_overview = self.tabWidget.widget(0)
+        
+        # Remove old Stats container
+        if self.stats_container is not None:
+            tab_overview.layout().removeWidget(self.stats_container)
+            self.stats_container.deleteLater()
+            self.stats_container = None
+            tab_overview.layout().update()
+        
+        # Recreate Stats container if we have enough data
+        if len(measurements) >= 2:
+            self.stats_container = StatsCardContainer()
+            tab_overview.layout().insertWidget(0, self.stats_container)
+            
+            latest = measurements[0]
+            previous = measurements[1]
+            
+            weight_change = latest.get('weight', 0) - previous.get('weight', 0)
+            fat_change = latest.get('body_fat_ratio', 0) - previous.get('body_fat_ratio', 0)
+            muscle_change = latest.get('muscle_mass', 0) - previous.get('muscle_mass', 0)
+            
+            self.stats_container.add_stats_card("Weight", f"{latest.get('weight', 0)}", weight_change, " kg")
+            self.stats_container.add_stats_card("Body Fat", f"{latest.get('body_fat_ratio', 0)}", fat_change, "%")
+            self.stats_container.add_stats_card("Muscle", f"{latest.get('muscle_mass', 0)}", muscle_change, " kg")
+            
+            self.stats_container.update()
+            tab_overview.update()
+        
+        # Remove old Chart and recreate
+        if self.trend_chart is not None:
+            tab_overview.layout().removeWidget(self.trend_chart)
+            self.trend_chart.deleteLater()
+            self.trend_chart = None
+            tab_overview.layout().update()
+        
+        self.trend_chart = TrendChart()
+        tab_overview.layout().insertWidget(1, self.trend_chart)
+        self.trend_chart.plot_trends(measurements)
+        
+        # Final force update
+        tab_overview.update()
 
     def show_context_menu(self, position):
         """
@@ -1370,6 +1506,16 @@ class MainController(QMainWindow):
         
         # Go to form page
         self.stack_diet_sub.setCurrentIndex(1)
+
+    def _parse_date_value(self, date_value):
+        """Convert various date formats to Python date object"""
+        from datetime import datetime as dt
+        if isinstance(date_value, datetime):
+            return date_value.date()
+        elif isinstance(date_value, str):
+            return dt.strptime(date_value, '%Y-%m-%d').date()
+        else:
+            return date_value
 
 
 

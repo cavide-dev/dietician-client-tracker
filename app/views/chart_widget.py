@@ -37,7 +37,16 @@ class TrendChart(QWidget):
             return
         
         # ===== PROBLEM 3: Sort by date (ascending - oldest first) =====
-        measurements = sorted(measurements, key=lambda x: x.get('date', ''))
+        # Normalize dates for sorting
+        def normalize_date(date_val):
+            if isinstance(date_val, datetime):
+                return date_val
+            elif isinstance(date_val, str):
+                return datetime.strptime(date_val, '%Y-%m-%d')
+            else:
+                return date_val
+
+        measurements = sorted(measurements, key=lambda x: normalize_date(x.get('date', '')))
         
         # ===== ADIM 2: Extract Data =====
         dates = []

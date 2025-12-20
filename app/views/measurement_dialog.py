@@ -11,10 +11,20 @@ class MeasurementDialog(QDialog):
     - Captures circumference measurements (Waist, Hip, Chest, Arm, Thigh).
     - Returns a dictionary ready for MongoDB insertion.
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, measurement_data=None):
         super().__init__(parent)
-        self.setWindowTitle("Add New Measurement")
-        self.resize(450, 700) # Slightly taller to fit all fields
+        
+        # If editing, set title to "Edit Measurement", else "Add New Measurement"
+        if measurement_data:
+            self.setWindowTitle("Edit Measurement")
+            self.is_edit_mode = True
+        else:
+            self.setWindowTitle("Add New Measurement")
+            self.is_edit_mode = False
+        
+        self.measurement_data = measurement_data
+        self.resize(550, 900)  # Larger dialog for better UX
+
 
         # --- MAIN LAYOUT ---
         self.layout = QVBoxLayout(self)
@@ -34,41 +44,36 @@ class MeasurementDialog(QDialog):
         # Weight (kg)
         self.input_weight = QDoubleSpinBox()
         self.input_weight.setRange(0, 300)
-        self.input_weight.setSuffix(" kg")
-        form_layout.addRow("Weight:", self.input_weight)
+        form_layout.addRow("Weight (kg):", self.input_weight)
 
         # Height (cm)
         self.input_height = QDoubleSpinBox()
         self.input_height.setRange(0, 250)
-        self.input_height.setSuffix(" cm")
-        form_layout.addRow("Height:", self.input_height)
+        form_layout.addRow("Height (cm):", self.input_height)
 
         # --- CATEGORY 2: BODY COMPOSITION ---
         
         # Body Fat Ratio (%)
         self.input_fat = QDoubleSpinBox()
         self.input_fat.setRange(0, 100)
-        self.input_fat.setSuffix(" %")
-        form_layout.addRow("Body Fat Ratio:", self.input_fat)
+        form_layout.addRow("Body Fat Ratio (%):", self.input_fat)
 
         # Muscle Mass (kg)
         self.input_muscle = QDoubleSpinBox()
         self.input_muscle.setRange(0, 200)
-        self.input_muscle.setSuffix(" kg")
-        form_layout.addRow("Muscle Mass:", self.input_muscle)
+        form_layout.addRow("Muscle Mass (kg):", self.input_muscle)
         
         # Metabolic Age (Years)
         self.input_metabolic_age = QDoubleSpinBox()
         self.input_metabolic_age.setRange(0, 150)
         self.input_metabolic_age.setDecimals(0) # Integer only
-        form_layout.addRow("Metabolic Age:", self.input_metabolic_age)
+        form_layout.addRow("Metabolic Age (years):", self.input_metabolic_age)
 
         # BMR (Basal Metabolic Rate) - [NEW]
         self.input_bmr = QDoubleSpinBox()
         self.input_bmr.setRange(0, 5000) 
         self.input_bmr.setDecimals(0)    
-        self.input_bmr.setSuffix(" kcal")
-        form_layout.addRow("BMR (Basal Met. Rate):", self.input_bmr)
+        form_layout.addRow("BMR (kcal):", self.input_bmr)
 
         # Visceral Fat Rating (1-59)
         self.input_visceral = QDoubleSpinBox()
@@ -78,8 +83,7 @@ class MeasurementDialog(QDialog):
         # Water Ratio (%)
         self.input_water = QDoubleSpinBox()
         self.input_water.setRange(0, 100)
-        self.input_water.setSuffix(" %")
-        form_layout.addRow("Water Ratio:", self.input_water)
+        form_layout.addRow("Water Ratio (%):", self.input_water)
 
         # --- CATEGORY 3: CIRCUMFERENCE MEASUREMENTS ---
         # These are all saved to DB, even if not shown in the main table.
@@ -87,32 +91,27 @@ class MeasurementDialog(QDialog):
         # Waist
         self.input_waist = QDoubleSpinBox()
         self.input_waist.setRange(0, 300)
-        self.input_waist.setSuffix(" cm")
-        form_layout.addRow("Waist Circumference:", self.input_waist)
+        form_layout.addRow("Waist (cm):", self.input_waist)
 
         # Hip
         self.input_hip = QDoubleSpinBox()
         self.input_hip.setRange(0, 300)
-        self.input_hip.setSuffix(" cm")
-        form_layout.addRow("Hip Circumference:", self.input_hip)
+        form_layout.addRow("Hip (cm):", self.input_hip)
         
         # Chest
         self.input_chest = QDoubleSpinBox()
         self.input_chest.setRange(0, 300)
-        self.input_chest.setSuffix(" cm")
-        form_layout.addRow("Chest Circumference:", self.input_chest)
+        form_layout.addRow("Chest (cm):", self.input_chest)
 
         # Arm
         self.input_arm = QDoubleSpinBox()
         self.input_arm.setRange(0, 100)
-        self.input_arm.setSuffix(" cm")
-        form_layout.addRow("Arm Circumference:", self.input_arm)
+        form_layout.addRow("Arm (cm):", self.input_arm)
 
         # Thigh
         self.input_thigh = QDoubleSpinBox()
         self.input_thigh.setRange(0, 150)
-        self.input_thigh.setSuffix(" cm")
-        form_layout.addRow("Thigh Circumference:", self.input_thigh)
+        form_layout.addRow("Thigh (cm):", self.input_thigh)
 
         # --- NOTES ---
         self.input_notes = QTextEdit()
@@ -128,6 +127,23 @@ class MeasurementDialog(QDialog):
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
         self.layout.addWidget(self.buttons)
+        # If editing, populate form fields with existing measurement data
+        if self.measurement_data:
+            self.input_date.setDate(self.measurement_data.get('date', QDate.currentDate()))
+            self.input_weight.setValue(self.measurement_data.get('weight', 0))
+            self.input_height.setValue(self.measurement_data.get('height', 0))
+            self.input_fat.setValue(self.measurement_data.get('body_fat', 0))
+            self.input_muscle.setValue(self.measurement_data.get('muscle', 0))
+            self.input_metabolic_age.setValue(self.measurement_data.get('metabolic_age', 0))
+            self.input_bmr.setValue(self.measurement_data.get('bmr', 0))
+            self.input_visceral.setValue(self.measurement_data.get('visceral_fat', 0))
+            self.input_water.setValue(self.measurement_data.get('water_ratio', 0))
+            self.input_waist.setValue(self.measurement_data.get('waist', 0))
+            self.input_hip.setValue(self.measurement_data.get('hip', 0))
+            self.input_chest.setValue(self.measurement_data.get('chest', 0))
+            self.input_arm.setValue(self.measurement_data.get('arm', 0))
+            self.input_thigh.setValue(self.measurement_data.get('thigh', 0))
+            self.input_notes.setPlainText(self.measurement_data.get('notes', ''))
 
     def get_data(self):
         """
