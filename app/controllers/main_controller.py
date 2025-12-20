@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView, QMessageBox, QAbstractItemView, QDialog, QMenu, QLabel
+from PyQt5.QtGui import QColor
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt, QDate 
 from bson.objectid import ObjectId
@@ -1089,17 +1090,30 @@ class MainController(QMainWindow):
                 
                 # Status (Active/Archived)
                 status = diet.get("status", "Active")
+                print(f"DEBUG: Status value = '{status}'")  # Kontrol et
                 
                 # --- Create Cells (Items) ---
+                
+                # Determine row color based on status
+                if status.lower() == "active":
+                    bg_color = QColor(200, 255, 200)  # Light green
+                else:  # Archived/Passive
+                    bg_color = QColor(220, 220, 220)  # Light gray
 
                 # Column 0: Date
-                self.table_diet_history.setItem(row_position, 0, QTableWidgetItem(date_str))
+                date_item = QTableWidgetItem(date_str)
+                date_item.setBackground(bg_color)
+                self.table_diet_history.setItem(row_position, 0, date_item)
                 
                 # Column 1: Title
-                self.table_diet_history.setItem(row_position, 1, QTableWidgetItem(title))
+                title_item = QTableWidgetItem(title)
+                title_item.setBackground(bg_color)
+                self.table_diet_history.setItem(row_position, 1, title_item)
                 
                 # Column 2: Status
-                self.table_diet_history.setItem(row_position, 2, QTableWidgetItem(status))
+                status_item = QTableWidgetItem(status)
+                status_item.setBackground(bg_color)
+                self.table_diet_history.setItem(row_position, 2, status_item)
                 
                 # --- CRITICAL STEP: Hidden ID ---
                 # We store the Diet's unique ID in the first cell invisibly.
