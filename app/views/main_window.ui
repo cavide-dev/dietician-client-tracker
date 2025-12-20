@@ -170,6 +170,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="search_clients">
+            <property name="placeholderText">
+             <string>🔍 Search by name...</string>
+            </property>
+           </widget>
+          </item>          
          </layout>
         </item>
         <item>
