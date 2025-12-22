@@ -53,7 +53,7 @@ class MainController(QMainWindow):
         self.load_clients_table()
         
         # --- 4. NAVIGATION BUTTONS (Menu Connections) ---
-        self.btn_dashboard.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_dashboard))
+        self.btn_dashboard.clicked.connect(self.show_dashboard)
         self.btn_clients.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
         self.btn_diet_plans.clicked.connect(self.switch_to_diet_page)
         self.btn_settings.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_settings))
@@ -159,6 +159,79 @@ class MainController(QMainWindow):
             note_value = client.get("notes", "")
             note_item = QTableWidgetItem(note_value)
             self.tableWidget.setItem(row_index, 2, note_item)
+
+    def load_dashboard(self):
+        """
+        Loads dashboard statistics and recent activity.
+        Called when dashboard page is displayed.
+        
+        Gösterilecek veriler:
+        - Total Clients count
+        - Total Measurements count
+        - Active Diets count
+        - Recent Activity list (last 10 actions)
+        """
+        if self.db is None:
+            return
+
+        try:
+            # ===== 1. STATS CARDS =====
+            
+            # Total Clients
+            total_clients = self.db['clients'].count_documents({})
+            self.label_total_clients.setText(str(total_clients))
+            
+            # Total Measurements
+            total_measurements = self.db['measurements'].count_documents({})
+            self.label_total_measurements.setText(str(total_measurements))
+            
+            # Active Diets (status = 'active')
+            active_diets = self.db['diet_plans'].count_documents({"status": "active"})
+            self.label_active_diets.setText(str(active_diets))
+            
+            # ===== 2. RECENT ACTIVITY =====
+            
+            self.list_recent_activity.clear()
+            
+            # Get recent clients (últimas 5 añadidos)
+            recent_clients = list(self.db['clients'].find().sort("_id", -1).limit(5))
+            for client in recent_clients:
+                activity_text = f"✓ {client.get('full_name', 'Unknown')} - Client added"
+                self.list_recent_activity.addItem(activity_text)
+            
+            # Get recent measurements (últimas 3 añadidas)
+            recent_measurements = list(self.db['measurements'].find().sort("_id", -1).limit(3))
+            for measurement in recent_measurements:
+                # Find client name for this measurement
+                client = self.db['clients'].find_one({"_id": measurement.get('client_id')})
+                client_name = client.get('full_name', 'Unknown') if client else 'Unknown'
+                activity_text = f"✓ {client_name} - Measurement added"
+                self.list_recent_activity.addItem(activity_text)
+            
+            # Get recent diet plans (últimos 2 creados)
+            recent_diets = list(self.db['diet_plans'].find().sort("_id", -1).limit(2))
+            for diet in recent_diets:
+                # Find client name for this diet
+                client = self.db['clients'].find_one({"_id": diet.get('client_id')})
+                client_name = client.get('full_name', 'Unknown') if client else 'Unknown'
+                activity_text = f"✓ {client_name} - Diet plan created"
+                self.list_recent_activity.addItem(activity_text)
+            
+            # If no activity, show message
+            if self.list_recent_activity.count() == 0:
+                self.list_recent_activity.addItem("No recent activity yet")
+                
+        except Exception as e:
+            print(f"Error loading dashboard: {e}")
+            self.list_recent_activity.addItem(f"Error loading activity: {str(e)}")
+
+    def show_dashboard(self):
+        """
+        Show dashboard page and load fresh data.
+        Called when Dashboard button is clicked.
+        """
+        self.load_dashboard()
+        self.stackedWidget.setCurrentWidget(self.page_dashboard)
 
     def filter_clients_by_search(self, search_text):
         """
@@ -1309,6 +1382,12 @@ class MainController(QMainWindow):
         - Keep UI styling separate from data-loading logic
         - Prevent UI from resetting on every data refresh
         """
+
+        # --- Birth Date Picker: Enable Calendar Popup ---
+        # Neden? QDateEdit'in down button'u styling'i problematik
+        # Çözüm: setCalendarPopup(True) = tıklanınca takvim açılır
+        # Sonuç: Kullanıcı input yazabilir VEYA takvimden tarih seçebilir
+        self.date_birth_add.setCalendarPopup(True)
 
         # --- Diet History Table: Column Layout ---
         header = self.table_diet_history.horizontalHeader()

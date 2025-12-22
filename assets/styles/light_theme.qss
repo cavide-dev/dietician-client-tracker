@@ -1,0 +1,557 @@
+/* 
+ * ====================================================
+ * LIGHT THEME - Dietician Client Tracker
+ * ====================================================
+ * Renk Paleti (Health Professional Theme)
+ */
+
+/* 
+ * PRIMARY: #10B981 (Emerald Green)
+ * - Kullanım: Buttons, active states, important UI elements
+ * - Neden: Sağlık ve doğallık sembolü, göz rahatlığı
+ */
+
+/* 
+ * SECONDARY: #F59E0B (Amber Orange) 
+ * - Kullanım: Highlights, warnings, accent elements
+ * - Neden: Uyarı ve dikkatin çekilmesi için, energi sembolü
+ */
+
+/* 
+ * ACCENT: #3DD9E8 (Light Teal)
+ * - Kullanım: Hover states, success feedback
+ * - Neden: Modern ve friendly görünüm, sakinleştirici
+ */
+
+/* 
+ * BACKGROUND: #FFFFFF (Beyaz)
+ * - Kullanım: Sayfa arka planı
+ * - Neden: Temiz, profesyonel, okunabilir
+ */
+
+/* 
+ * CARD: #F8F9FA (Açık Gri)
+ * - Kullanım: Panel, dialog, card arka planları
+ * - Neden: Beyazdan biraz koyu, separasyon göstermek için
+ */
+
+/* 
+ * TEXT: #2D3748 (Koyu Gri)
+ * - Kullanım: Tüm text metinleri
+ * - Neden: Beyaz arka fonda çok kontrast, rahat okunabilir
+ */
+
+/* 
+ * BORDER: #E2E8F0 (Çok Açık Gri)
+ * - Kullanım: Input borders, dividers, subtle separations
+ * - Neden: Subtle, ağır görünmüyor, ama görülüyor
+ */
+
+/* ====================================================
+ * GLOBAL DEFAULTS
+ * ====================================================
+ * 
+ * QWidget: Tüm widget'lerin temel stili
+ * Neden QWidget? Ana pencere ve tüm alt widget'ler bundan inherit alır
+ */
+
+QWidget {
+    background-color: #FFFFFF;
+    color: #2D3748;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+/* 
+ * QMainWindow: Ana pencere arka planı
+ * Neden? Uygulamanın en dış çerçevesi olduğu için
+ */
+
+QMainWindow {
+    background-color: #FFFFFF;
+}
+
+/* ====================================================
+ * BUTTONS (QPushButton)
+ * ====================================================
+ */
+
+/*
+ * QPushButton {} - Butonun normal (default) durumu
+ * Neden bu isim? Qt'de push button widget'inin sınıfı QPushButton
+ */
+
+QPushButton {
+    background-color: #10B981;           /* Arka fon yeşil */
+    color: #FFFFFF;                      /* Yazı beyaz */
+    border: none;                        /* Kenar çizgisi yok (clean tasarım) */
+    border-radius: 6px;                  /* Köşeler yuvarlatılmış (modern) */
+    padding: 8px 16px;                   /* İçeride boşluk: üst-alt 8px, sol-sağ 16px */
+    font-weight: bold;                   /* Yazı kalın, belirgin */
+    font-size: 13px;
+}
+
+/*
+ * QPushButton:hover {} - Mouse butonun üzerine gelince
+ * Neden? User feedback vermek, "interactive" göstermek
+ */
+
+QPushButton:hover {
+    background-color: #1CCB8B;           /* Hafif açık yeşil (hover effect) */
+}
+
+/*
+ * QPushButton:pressed {} - Buton tıklanınca
+ * Neden? Kullanıcı basarken "click" feedback'i vermek
+ */
+
+QPushButton:pressed {
+    background-color: #0A8C5B;           /* Hafif koyu yeşil (pressed effect) */
+}
+
+/* ====================================================
+ * BUTTON CATEGORIES (Renkli Button Varyasyonları)
+ * ====================================================
+ */
+
+/*
+ * Primary Buttons (Yeşil) - Main actions
+ * Neden? User'ın yapması gereken main action'lar (Save, Add New vb.)
+ * Kullanılan buttonlar: btn_save, btn_add_new, btn_new_diet, btn_new_measurement
+ */
+
+#btn_save, #btn_add_new, #btn_new_diet, #btn_new_measurement {
+    background-color: #10B981;           /* Primary yeşil */
+    color: #FFFFFF;
+}
+
+#btn_save:hover, #btn_add_new:hover, #btn_new_diet:hover, #btn_new_measurement:hover {
+    background-color: #1CCB8B;           /* Hafif açık */
+}
+
+#btn_save:pressed, #btn_add_new:pressed, #btn_new_diet:pressed, #btn_new_measurement:pressed {
+    background-color: #0A8C5B;           /* Hafif koyu */
+}
+
+/*
+ * Danger Buttons (Kırmızı) - Delete actions
+ * Neden? Uyarıcı renk, user silme işleminden emiş olması gerekir
+ * Kullanılan buttonlar: btn_delete
+ */
+
+#btn_delete {
+    background-color: #EF4444;           /* Kırmızı */
+    color: #FFFFFF;
+}
+
+#btn_delete:hover {
+    background-color: #F87171;           /* Hafif açık kırmızı */
+}
+
+#btn_delete:pressed {
+    background-color: #991B1B;           /* Hafif koyu kırmızı */
+}
+
+/*
+ * Secondary Buttons (Gri) - Cancel actions
+ * Neden? Neutral renk, user işlemden vazgeçtiğini göstermek
+ * Kullanılan buttonlar: btn_cancel
+ */
+
+#btn_cancel {
+    background-color: #9CA3AF;           /* Gri */
+    color: #FFFFFF;
+}
+
+#btn_cancel:hover {
+    background-color: #B4BDCC;           /* Hafif açık gri */
+}
+
+#btn_cancel:pressed {
+    background-color: #6B7280;           /* Hafif koyu gri */
+}
+
+/* ====================================================
+ * INPUT FIELDS (QLineEdit)
+ * ====================================================
+ */
+
+/*
+ * QLineEdit {} - Yazı giriş alanının normal durumu
+ * Neden bu isim? Qt'de text input widget'inin sınıfı QLineEdit
+ */
+
+QLineEdit {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    color: #2D3748;                      /* Yazı rengi koyu gri */
+    border: 1px solid #E2E8F0;           /* Border 1px kalın, açık gri */
+    border-radius: 4px;                  /* Köşeler hafif yuvarlatılmış */
+    padding: 6px 10px;                   /* İçeride boşluk */
+    font-size: 13px;
+    selection-background-color: #10B981; /* Seçili yazı arka fonu yeşil */
+    selection-color: #FFFFFF;            /* Seçili yazı beyaz */
+}
+
+/*
+ * QLineEdit:focus {} - Input'a tıklanıp yazılmaya başlandığında
+ * Neden? Kullanıcının "bu alan aktif" olduğunu göstermek
+ */
+
+QLineEdit:focus {
+    border: 1px solid #10B981;           /* Border yeşile dönüş (primary) */
+    background-color: #FFFFFF;           /* Arka fon beyaz kalır */
+}
+
+/* ====================================================
+ * TEXT AREAS (QPlainTextEdit)
+ * ====================================================
+ */
+
+/*
+ * QPlainTextEdit {} - Çok satırlı yazı alanı (Notes gibi)
+ * Neden bu isim? Qt'de multi-line text widget'inin sınıfı QPlainTextEdit
+ */
+
+QPlainTextEdit {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    color: #2D3748;                      /* Yazı rengi koyu gri */
+    border: 1px solid #E2E8F0;           /* Border 1px kalın, açık gri */
+    border-radius: 4px;                  /* Köşeler hafif yuvarlatılmış */
+    padding: 8px 10px;                   /* İçeride biraz daha boşluk */
+    font-size: 13px;
+    selection-background-color: #10B981; /* Seçili yazı arka fonu yeşil */
+    selection-color: #FFFFFF;            /* Seçili yazı beyaz */
+}
+
+/*
+ * QPlainTextEdit:focus {} - Text area'ya tıklanınca
+ * Neden? QLineEdit gibi, aktif olduğunu göstermek
+ */
+
+QPlainTextEdit:focus {
+    border: 1px solid #10B981;           /* Border yeşile dönüş */
+    background-color: #FFFFFF;           /* Arka fon beyaz kalır */
+}
+
+/* ====================================================
+ * LABELS (QLabel)
+ * ====================================================
+ */
+
+/*
+ * QLabel {} - Etiket/yazı (form labels gibi: "Full Name:", "Phone:")
+ * Neden? Text bilgisi göstermek, hiç input değildir
+ */
+
+QLabel {
+    color: #2D3748;                      /* Yazı koyu gri */
+    font-size: 13px;                     /* Normal boyut */
+}
+
+/*
+ * QLabel#TitleLabel {} - Sayfa başlıkları için special class
+ * Neden special class? Normal labels normal, başlık labels büyük olsun diye
+ * NOT: Bu class'ı kullanmak için UI dosyasında widget'in objectName'ine
+ *      "TitleLabel" yazman lazım. Şu anki sayfalarda yok, ileride ekleyeceğiz
+ */
+
+QLabel#TitleLabel {
+    color: #10B981;                      /* Başlık rengi: primary yeşil */
+    font-size: 18px;                     /* Daha büyük */
+    font-weight: bold;                   /* Kalın, prominent */
+}
+
+/* ====================================================
+ * TABLES (QTableWidget)
+ * ====================================================
+ */
+
+/*
+ * QTableWidget {} - Tablo container'ı
+ * Neden? Tüm tablo ayarlarını kontrol etmek için
+ */
+
+QTableWidget {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    gridline-color: #E2E8F0;             /* Grid çizgileri açık gri */
+    border: 1px solid #E2E8F0;           /* Tablo border'ı */
+    border-radius: 4px;
+}
+
+/*
+ * QHeaderView::section {} - Tablo başlıkları (header)
+ * Neden? Kolon başlıklarını stillemek için
+ * Notu: "::section" QHeaderView'un özel pseudo-element'i
+ */
+
+QHeaderView::section {
+    background-color: #F8F9FA;           /* Hafif gri arka fon */
+    color: #2D3748;                      /* Siyah yazı */
+    padding: 8px;                        /* İçeride boşluk */
+    border: none;                        /* Border yok, clean */
+    font-weight: bold;                   /* Başlıklar kalın */
+    border-bottom: 1px solid #E2E8F0;    /* Alt çizgi */
+}
+
+/*
+ * QTableWidget::item {} - Tablo satırlarının normal durumu
+ * Neden? Her cell'i stil vermek için
+ */
+
+QTableWidget::item {
+    padding: 8px;                        /* Hücrenin içinde boşluk */
+    background-color: #FFFFFF;           /* Beyaz arka fon */
+    color: #2D3748;                      /* Koyu gri yazı */
+    border: none;                        /* Border yok */
+}
+
+/*
+ * QTableWidget::item:hover {} - Tablo satırına mouse gelince
+ * Neden? Kullanıcıya "bu satır seçilebilir" mesajı vermek
+ */
+
+QTableWidget::item:hover {
+    background-color: #E8F9F5;           /* Çok hafif yeşil (hover) */
+}
+
+/*
+ * QTableWidget::item:selected {} - Satır seçildiğinde
+ * Neden? Seçili satırı vurgulamak, ama kırıcı olmamak
+ */
+
+QTableWidget::item:selected {
+    background-color: rgba(16, 185, 129, 0.3);  /* Yeşil %30 opacity */
+    color: #2D3748;                             /* Yazı koyu kalır */
+}
+
+/*
+ * QScrollBar - Tablo scroll bar'ları
+ * Neden? Scroll bar'ı tema renklerine uyumlu yapmak
+ */
+
+QTableWidget QScrollBar:vertical {
+    background-color: #F8F9FA;           /* Arka fon hafif gri */
+    width: 12px;                         /* Genişlik */
+}
+
+QTableWidget QScrollBar::handle:vertical {
+    background-color: #CBD5E1;           /* Kaydırıcı biraz koyu gri */
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QTableWidget QScrollBar::handle:vertical:hover {
+    background-color: #94A3B8;           /* Hover'da daha koyu */
+}
+
+/* ====================================================
+ * COMBOBOX (QComboBox)
+ * ====================================================
+ */
+
+/*
+ * QComboBox {} - Dropdown widget'inin normal durumu
+ * Neden? Client seçimi, filter seçimi gibi dropdown'ları stil vermek için
+ */
+
+QComboBox {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    color: #2D3748;                      /* Yazı koyu gri */
+    border: 1px solid #E2E8F0;           /* Border açık gri */
+    border-radius: 4px;                  /* Köşeler yuvarlatılmış */
+    padding: 6px 10px;                   /* İçeride boşluk */
+    font-size: 13px;
+}
+
+/*
+ * QComboBox:focus {} - ComboBox odak aldığında
+ * Neden? Kullanıcıya "şu alan aktif" mesajı vermek
+ */
+
+QComboBox:focus {
+    border: 1px solid #10B981;           /* Border yeşile dönüş */
+    background-color: #FFFFFF;           /* Arka fon beyaz kalır */
+}
+
+/*
+ * QComboBox::drop-down {} - Dropdown açma butonu
+ * Neden? Açma butonunu tema renklerine uyumlu yapmak
+ */
+
+QComboBox::drop-down {
+    background-color: transparent;       /* Şeffaf, buton alanı */
+    border: none;
+}
+
+/*
+ * QComboBox QAbstractItemView {} - Açılan dropdown list
+ * Neden? Liste içindeki öğeleri stil vermek için
+ */
+
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    color: #2D3748;                      /* Yazı koyu gri */
+    border: 1px solid #E2E8F0;           /* Border */
+    selection-background-color: #10B981; /* Seçili item yeşil */
+    selection-color: #FFFFFF;            /* Seçili item yazı beyaz */
+}
+
+/* ====================================================
+ * DATE/TIME EDIT (QDateEdit, QTimeEdit)
+ * ====================================================
+ */
+
+/*
+ * QDateEdit {} ve QTimeEdit {} - Tarih/saat picker'ları
+ * Neden? Birth date, date seçme alanlarını stil vermek için
+ * NOT: İkisi de aynı styling alır
+ */
+
+QDateEdit, QTimeEdit {
+    background-color: #FFFFFF;           /* Arka fon beyaz */
+    color: #2D3748;                      /* Yazı koyu gri */
+    border: 1px solid #E2E8F0;           /* Border açık gri */
+    border-radius: 4px;                  /* Köşeler yuvarlatılmış */
+    padding: 6px 10px;                   /* Normal padding (buton yok artık) */
+    font-size: 13px;
+}
+
+/*
+ * QDateEdit:focus {} - Tarih picker'ı seçildiğinde
+ * Neden? Input gibi davranması lazım, yeşil border olması lazım
+ */
+
+QDateEdit:focus, QTimeEdit:focus {
+    border: 1px solid #10B981;           /* Border yeşile dönüş */
+    background-color: #FFFFFF;           /* Arka fon beyaz kalır */
+}
+
+/*
+ * QDateEdit::drop-down {} ve QDateEdit::down-button {} - Tarih picker butonu
+ * Neden? Buton'u visible yapıp tema renklerine uyumlu yapmak
+ */
+
+QDateEdit::drop-down, QTimeEdit::drop-down {
+    width: 0px;                          /* Buton görünmez, gizli */
+    background-color: transparent;
+    border: none;
+}
+
+QDateEdit::down-arrow, QTimeEdit::down-arrow {
+    image: url(none);
+    width: 0px;
+}
+
+/* ====================================================
+ * SCROLLBAR (Global) - Tüm scrollbar'lar
+ * ====================================================
+ */
+
+/*
+ * QScrollBar:vertical {} - Dikey kaydırıcı
+ * Neden? Tüm scrollbar'ları konsistent yapmak
+ */
+
+QScrollBar:vertical {
+    background-color: #F8F9FA;           /* Arka fon hafif gri */
+    width: 12px;                         /* Genişlik */
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #CBD5E1;           /* Kaydırıcı gri */
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #94A3B8;           /* Hover'da daha koyu */
+}
+
+QScrollBar:horizontal {
+    background-color: #F8F9FA;           /* Arka fon hafif gri */
+    height: 12px;                        /* Yükseklik */
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #CBD5E1;           /* Kaydırıcı gri */
+    border-radius: 6px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #94A3B8;           /* Hover'da daha koyu */
+}
+
+/* ====================================================
+ * CALENDAR WIDGET (QCalendarWidget)
+ * ====================================================
+ */
+
+/*
+ * QCalendarWidget {} - Takvim popup'ının temel stili
+ * Neden? Date picker'a tıklandığında açılan takvimi modern, temiz yapmak
+ */
+
+QCalendarWidget {
+    background-color: #FFFFFF;           /* Beyaz arka fon */
+    color: #2D3748;                      /* Koyu gri yazı */
+    border: 1px solid #E2E8F0;           /* Hafif gri border */
+    border-radius: 4px;
+}
+
+/*
+ * QCalendarWidget QAbstractItemView {} - Takvim günleri
+ * Neden? Her günün hücresini stil vermek
+ */
+
+QCalendarWidget QAbstractItemView {
+    background-color: #FFFFFF;           /* Beyaz */
+    color: #2D3748;                      /* Koyu gri yazı */
+    selection-background-color: #10B981; /* Seçili gün yeşil */
+    selection-color: #FFFFFF;            /* Seçili gün yazı beyaz */
+}
+
+/*
+ * QCalendarWidget QAbstractItemView:hover {} - Gün üzerine mouse
+ * Neden? Hover feedback'i, kullanıcı seçebileceğini anlasın
+ */
+
+QCalendarWidget QAbstractItemView:hover {
+    background-color: #F8F9FA;           /* Hafif gri hover */
+}
+
+/*
+ * QCalendarWidget QToolButton {} - Ay/Yıl navigasyon butonları
+ * Neden? Önceki/Sonraki ay butonlarını modern yapmak
+ */
+
+QCalendarWidget QToolButton {
+    background-color: #F8F9FA;           /* Hafif gri */
+    color: #2D3748;                      /* Koyu yazı */
+    border: 1px solid #E2E8F0;           /* Hafif border */
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+QCalendarWidget QToolButton:hover {
+    background-color: #E2E8F0;           /* Hover'da biraz koyu */
+}
+
+QCalendarWidget QToolButton:pressed {
+    background-color: #CBD5E1;           /* Pressed'de daha koyu */
+}
+
+/*
+ * QCalendarWidget QSpinBox {} - Yıl seçimi spinner'ı
+ * Neden? Yıl girişini tema renklerine uyumlu yapmak
+ */
+
+QCalendarWidget QSpinBox {
+    background-color: #FFFFFF;
+    color: #2D3748;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    padding: 2px 4px;
+}

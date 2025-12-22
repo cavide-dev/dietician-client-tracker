@@ -131,21 +131,145 @@
        <number>2</number>
       </property>
       <widget class="QWidget" name="page_dashboard">
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_dashboard">
+        <property name="spacing">
+         <number>20</number>
+        </property>
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>20</number>
+        </property>
+        <property name="rightMargin">
+         <number>20</number>
+        </property>
+        <property name="bottomMargin">
+         <number>20</number>
+        </property>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
+         <widget class="QLabel" name="label_dashboard_title">
           <property name="text">
            <string>Dashboard</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+          <property name="objectName">
+           <string>TitleLabel</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_stats" stretch="1,1,1">
+          <property name="spacing">
+           <number>20</number>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="card_total_clients">
+            <property name="title">
+             <string>👥 Total Clients</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_card1">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_total_clients">
+               <property name="text">
+                <string>0</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="styleSheet">
+                <string>font-size: 32px; font-weight: bold; color: #10B981;</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="card_total_measurements">
+            <property name="title">
+             <string>📊 Total Measurements</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_card2">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_total_measurements">
+               <property name="text">
+                <string>0</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="styleSheet">
+                <string>font-size: 32px; font-weight: bold; color: #F59E0B;</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="card_active_diets">
+            <property name="title">
+             <string>🥗 Active Diets</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_card3">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_active_diets">
+               <property name="text">
+                <string>0</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="styleSheet">
+                <string>font-size: 32px; font-weight: bold; color: #3DD9E8;</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_recent_activity">
+          <property name="title">
+           <string>📋 Recent Activity</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_activity">
+           <item>
+            <widget class="QListWidget" name="list_recent_activity">
+             <property name="minimumHeight">
+              <number>200</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_dashboard">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -444,7 +568,7 @@
             <item row="2" column="0">
              <widget class="QLabel" name="label_birth_date">
               <property name="text">
-               <string>Birth Date:</string>
+               <string>Birth Date: 📅</string>
               </property>
               <property name="alignment">
                <set>AlignRight|AlignTrailing|AlignVCenter</set>
