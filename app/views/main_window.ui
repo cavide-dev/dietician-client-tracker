@@ -100,6 +100,19 @@
         </widget>
        </item>
        <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QPushButton" name="btn_settings">
          <property name="minimumSize">
           <size>
@@ -128,148 +141,24 @@
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="page_dashboard">
-       <layout class="QVBoxLayout" name="verticalLayout_dashboard">
-        <property name="spacing">
-         <number>20</number>
-        </property>
-        <property name="leftMargin">
-         <number>20</number>
-        </property>
-        <property name="topMargin">
-         <number>20</number>
-        </property>
-        <property name="rightMargin">
-         <number>20</number>
-        </property>
-        <property name="bottomMargin">
-         <number>20</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QLabel" name="label_dashboard_title">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Dashboard</string>
           </property>
-          <property name="objectName">
-           <string>TitleLabel</string>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_stats" stretch="1,1,1">
-          <property name="spacing">
-           <number>20</number>
-          </property>
-          <item>
-           <widget class="QGroupBox" name="card_total_clients">
-            <property name="title">
-             <string>👥 Total Clients</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_card1">
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <item>
-              <widget class="QLabel" name="label_total_clients">
-               <property name="text">
-                <string>0</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-               <property name="styleSheet">
-                <string>font-size: 32px; font-weight: bold; color: #10B981;</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="card_total_measurements">
-            <property name="title">
-             <string>📊 Total Measurements</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_card2">
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <item>
-              <widget class="QLabel" name="label_total_measurements">
-               <property name="text">
-                <string>0</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-               <property name="styleSheet">
-                <string>font-size: 32px; font-weight: bold; color: #F59E0B;</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="card_active_diets">
-            <property name="title">
-             <string>🥗 Active Diets</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_card3">
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <item>
-              <widget class="QLabel" name="label_active_diets">
-               <property name="text">
-                <string>0</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-               <property name="styleSheet">
-                <string>font-size: 32px; font-weight: bold; color: #3DD9E8;</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_recent_activity">
-          <property name="title">
-           <string>📋 Recent Activity</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_activity">
-           <item>
-            <widget class="QListWidget" name="list_recent_activity">
-             <property name="minimumHeight">
-              <number>200</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_dashboard">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -300,7 +189,7 @@
              <string>🔍 Search by name...</string>
             </property>
            </widget>
-          </item>          
+          </item>
          </layout>
         </item>
         <item>
@@ -379,14 +268,14 @@
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
              <widget class="QGroupBox" name="groupBox_7">
-              <property name="title">
-               <string>Notes</string>
-              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Notes</string>
               </property>
               <widget class="QLabel" name="lbl_client_notes">
                <property name="geometry">
@@ -522,7 +411,10 @@
           </item>
           <item>
            <layout class="QFormLayout" name="formLayout_add_client">
-            <property name="spacing">
+            <property name="horizontalSpacing">
+             <number>12</number>
+            </property>
+            <property name="verticalSpacing">
              <number>12</number>
             </property>
             <item row="0" column="0">
@@ -531,15 +423,12 @@
                <string>Full Name:</string>
               </property>
               <property name="alignment">
-               <set>AlignRight|AlignTrailing|AlignVCenter</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
              <widget class="QLineEdit" name="txt_name">
-              <property name="minimumWidth">
-               <number>250</number>
-              </property>
               <property name="placeholderText">
                <string>Enter full name</string>
               </property>
@@ -551,15 +440,12 @@
                <string>Phone:</string>
               </property>
               <property name="alignment">
-               <set>AlignRight|AlignTrailing|AlignVCenter</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
              <widget class="QLineEdit" name="txt_phone">
-              <property name="minimumWidth">
-               <number>250</number>
-              </property>
               <property name="placeholderText">
                <string>555 123 45 67</string>
               </property>
@@ -568,19 +454,15 @@
             <item row="2" column="0">
              <widget class="QLabel" name="label_birth_date">
               <property name="text">
-               <string>Birth Date: 📅</string>
+               <string>Birth Date:</string>
               </property>
               <property name="alignment">
-               <set>AlignRight|AlignTrailing|AlignVCenter</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QDateEdit" name="date_birth_add">
-              <property name="minimumWidth">
-               <number>250</number>
-              </property>
-             </widget>
+             <widget class="QDateEdit" name="date_birth_add"/>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_notes">
@@ -588,18 +470,12 @@
                <string>Notes:</string>
               </property>
               <property name="alignment">
-               <set>AlignRight|AlignTop|AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
              <widget class="QPlainTextEdit" name="txt_notes">
-              <property name="minimumWidth">
-               <number>250</number>
-              </property>
-              <property name="maximumHeight">
-               <number>100</number>
-              </property>
               <property name="placeholderText">
                <string>Enter notes...</string>
               </property>
@@ -664,9 +540,6 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_save">
-            <property name="minimumWidth">
-             <number>100</number>
-            </property>
             <property name="text">
              <string>Save</string>
             </property>
@@ -674,9 +547,6 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_cancel">
-            <property name="minimumWidth">
-             <number>100</number>
-            </property>
             <property name="text">
              <string>Cancel</string>
             </property>
@@ -775,8 +645,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>304</width>
-                 <height>534</height>
+                 <width>749</width>
+                 <height>551</height>
                 </rect>
                </property>
                <property name="sizePolicy">
