@@ -165,7 +165,7 @@ class MainController(QMainWindow):
         Loads dashboard statistics and recent activity.
         Called when dashboard page is displayed.
         
-        Gösterilecek veriler:
+        Data displayed:
         - Total Clients count
         - Total Measurements count
         - Active Diets count
@@ -268,7 +268,7 @@ class MainController(QMainWindow):
         try:
             birth_date = self.date_birth_add.date().toString("yyyy-MM-dd")
         except Exception:
-            # Olur da bir hata olursa bugünün tarihini atayalım (Çökmemesi için)
+            # If error occurs, fallback to today's date (prevent crash)
             birth_date = QDate.currentDate().toString("yyyy-MM-dd")
 
         if not full_name:
@@ -1384,9 +1384,9 @@ class MainController(QMainWindow):
         """
 
         # --- Birth Date Picker: Enable Calendar Popup ---
-        # Neden? QDateEdit'in down button'u styling'i problematik
-        # Çözüm: setCalendarPopup(True) = tıklanınca takvim açılır
-        # Sonuç: Kullanıcı input yazabilir VEYA takvimden tarih seçebilir
+        # Why? QDateEdit down button styling is problematic
+        # Solution: setCalendarPopup(True) = opens calendar on click
+        # Result: User can type date OR select from calendar
         self.date_birth_add.setCalendarPopup(True)
 
         # --- Diet History Table: Column Layout ---
@@ -1500,7 +1500,7 @@ class MainController(QMainWindow):
                 "dinner": dinner,
                 "evening_snack": snack_3
             },
-            "updated_at": datetime.now()  # Güncelleme zamanı
+            "updated_at": datetime.now()  # Update timestamp
         }
         
         # 5. Update in database

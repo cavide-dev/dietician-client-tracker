@@ -2,57 +2,57 @@
  * ====================================================
  * LIGHT THEME - Dietician Client Tracker
  * ====================================================
- * Renk Paleti (Health Professional Theme)
+ * Color Palette (Health Professional Theme)
  */
 
 /* 
  * PRIMARY: #10B981 (Emerald Green)
- * - Kullanım: Buttons, active states, important UI elements
- * - Neden: Sağlık ve doğallık sembolü, göz rahatlığı
+ * - Usage: Buttons, active states, important UI elements
+ * - Why: Symbol of health and nature, comfortable for eyes
  */
 
 /* 
  * SECONDARY: #F59E0B (Amber Orange) 
- * - Kullanım: Highlights, warnings, accent elements
- * - Neden: Uyarı ve dikkatin çekilmesi için, energi sembolü
+ * - Usage: Highlights, warnings, accent elements
+ * - Why: Warning color, draws attention, symbol of energy
  */
 
 /* 
  * ACCENT: #3DD9E8 (Light Teal)
- * - Kullanım: Hover states, success feedback
- * - Neden: Modern ve friendly görünüm, sakinleştirici
+ * - Usage: Hover states, success feedback
+ * - Why: Modern and friendly appearance, calming effect
  */
 
 /* 
- * BACKGROUND: #FFFFFF (Beyaz)
- * - Kullanım: Sayfa arka planı
- * - Neden: Temiz, profesyonel, okunabilir
+ * BACKGROUND: #FFFFFF (White)
+ * - Usage: Page background
+ * - Why: Clean, professional, readable
  */
 
 /* 
- * CARD: #F8F9FA (Açık Gri)
- * - Kullanım: Panel, dialog, card arka planları
- * - Neden: Beyazdan biraz koyu, separasyon göstermek için
+ * CARD: #F8F9FA (Light Gray)
+ * - Usage: Panel, dialog, card backgrounds
+ * - Why: Slightly darker than white, shows separation
  */
 
 /* 
- * TEXT: #2D3748 (Koyu Gri)
- * - Kullanım: Tüm text metinleri
- * - Neden: Beyaz arka fonda çok kontrast, rahat okunabilir
+ * TEXT: #2D3748 (Dark Gray)
+ * - Usage: All text content
+ * - Why: High contrast on white background, easy to read
  */
 
 /* 
- * BORDER: #E2E8F0 (Çok Açık Gri)
- * - Kullanım: Input borders, dividers, subtle separations
- * - Neden: Subtle, ağır görünmüyor, ama görülüyor
+ * BORDER: #E2E8F0 (Very Light Gray)
+ * - Usage: Input borders, dividers, subtle separations
+ * - Why: Subtle, not too heavy, but visible
  */
 
 /* ====================================================
  * GLOBAL DEFAULTS
  * ====================================================
  * 
- * QWidget: Tüm widget'lerin temel stili
- * Neden QWidget? Ana pencere ve tüm alt widget'ler bundan inherit alır
+ * QWidget: Base style for all widgets
+ * Why QWidget? Main window and all sub-widgets inherit from it
  */
 
 QWidget {
@@ -63,8 +63,8 @@ QWidget {
 }
 
 /* 
- * QMainWindow: Ana pencere arka planı
- * Neden? Uygulamanın en dış çerçevesi olduğu için
+ * QMainWindow: Main window background
+ * Why? It's the outermost container of the entire UI
  */
 
 QMainWindow {
@@ -77,98 +77,98 @@ QMainWindow {
  */
 
 /*
- * QPushButton {} - Butonun normal (default) durumu
- * Neden bu isim? Qt'de push button widget'inin sınıfı QPushButton
+ * QPushButton {} - Button's normal (default) state
+ * Why this name? In Qt, push button widget's class is QPushButton
  */
 
 QPushButton {
-    background-color: #10B981;           /* Arka fon yeşil */
-    color: #FFFFFF;                      /* Yazı beyaz */
-    border: none;                        /* Kenar çizgisi yok (clean tasarım) */
-    border-radius: 6px;                  /* Köşeler yuvarlatılmış (modern) */
-    padding: 8px 16px;                   /* İçeride boşluk: üst-alt 8px, sol-sağ 16px */
-    font-weight: bold;                   /* Yazı kalın, belirgin */
+    background-color: #10B981;           /* Background green */
+    color: #FFFFFF;                      /* Text white */
+    border: none;                        /* No border (clean design) */
+    border-radius: 6px;                  /* Rounded corners (modern) */
+    padding: 8px 16px;                   /* Inner spacing: top-bottom 8px, left-right 16px */
+    font-weight: bold;                   /* Text bold, prominent */
     font-size: 13px;
 }
 
 /*
- * QPushButton:hover {} - Mouse butonun üzerine gelince
- * Neden? User feedback vermek, "interactive" göstermek
+ * QPushButton:hover {} - When mouse hovers over button
+ * Why? Give user feedback, show it's "interactive"
  */
 
 QPushButton:hover {
-    background-color: #1CCB8B;           /* Hafif açık yeşil (hover effect) */
+    background-color: #1CCB8B;           /* Light green hover effect */
 }
 
 /*
- * QPushButton:pressed {} - Buton tıklanınca
- * Neden? Kullanıcı basarken "click" feedback'i vermek
+ * QPushButton:pressed {} - When button is clicked
+ * Why? Give user "click" feedback while pressing
  */
 
 QPushButton:pressed {
-    background-color: #0A8C5B;           /* Hafif koyu yeşil (pressed effect) */
+    background-color: #0A8C5B;           /* Slightly darker green (pressed effect) */
 }
 
 /* ====================================================
- * BUTTON CATEGORIES (Renkli Button Varyasyonları)
+ * BUTTON CATEGORIES (Colored Button Variations)
  * ====================================================
  */
 
 /*
- * Primary Buttons (Yeşil) - Main actions
- * Neden? User'ın yapması gereken main action'lar (Save, Add New vb.)
- * Kullanılan buttonlar: btn_save, btn_add_new, btn_new_diet, btn_new_measurement
+ * Primary Buttons (Green) - Main actions
+ * Why? Main actions user should perform (Save, Add New, etc.)
+ * Used buttons: btn_save, btn_add_new, btn_new_diet, btn_new_measurement
  */
 
 #btn_save, #btn_add_new, #btn_new_diet, #btn_new_measurement {
-    background-color: #10B981;           /* Primary yeşil */
+    background-color: #10B981;           /* Primary green */
     color: #FFFFFF;
 }
 
 #btn_save:hover, #btn_add_new:hover, #btn_new_diet:hover, #btn_new_measurement:hover {
-    background-color: #1CCB8B;           /* Hafif açık */
+    background-color: #1CCB8B;           /* Light open */
 }
 
 #btn_save:pressed, #btn_add_new:pressed, #btn_new_diet:pressed, #btn_new_measurement:pressed {
-    background-color: #0A8C5B;           /* Hafif koyu */
+    background-color: #0A8C5B;           /* Slightly darker */
 }
 
 /*
- * Danger Buttons (Kırmızı) - Delete actions
- * Neden? Uyarıcı renk, user silme işleminden emiş olması gerekir
- * Kullanılan buttonlar: btn_delete
+ * Danger Buttons (Red) - Delete actions
+ * Why? Warning color, user should be sure before deleting
+ * Used buttons: btn_delete
  */
 
 #btn_delete {
-    background-color: #EF4444;           /* Kırmızı */
+    background-color: #EF4444;           /* Red */
     color: #FFFFFF;
 }
 
 #btn_delete:hover {
-    background-color: #F87171;           /* Hafif açık kırmızı */
+    background-color: #F87171;           /* Light red */
 }
 
 #btn_delete:pressed {
-    background-color: #991B1B;           /* Hafif koyu kırmızı */
+    background-color: #991B1B;           /* Dark red */
 }
 
 /*
- * Secondary Buttons (Gri) - Cancel actions
- * Neden? Neutral renk, user işlemden vazgeçtiğini göstermek
- * Kullanılan buttonlar: btn_cancel
+ * Secondary Buttons (Gray) - Cancel actions
+ * Why? Neutral color, user cancels/exits action
+ * Used buttons: btn_cancel
  */
 
 #btn_cancel {
-    background-color: #9CA3AF;           /* Gri */
+    background-color: #9CA3AF;           /* Gray */
     color: #FFFFFF;
 }
 
 #btn_cancel:hover {
-    background-color: #B4BDCC;           /* Hafif açık gri */
+    background-color: #B4BDCC;           /* Light gray */
 }
 
 #btn_cancel:pressed {
-    background-color: #6B7280;           /* Hafif koyu gri */
+    background-color: #6B7280;           /* Dark gray */
 }
 
 /* ====================================================
