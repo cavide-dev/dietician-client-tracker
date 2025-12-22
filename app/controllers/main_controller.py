@@ -49,6 +49,8 @@ class MainController(QMainWindow):
         # 3. Initial Setup
         # Show the dashboard page by default on startup.
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
+        # Load dashboard data on startup
+        self.load_dashboard()
         # Load the table data
         self.load_clients_table()
         
