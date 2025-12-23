@@ -49,7 +49,7 @@ def seed_dieticians():
             "username": "admin",
             "password": hashed_password,
             "email": "admin@dietician.com",
-            "full_name": "Administrator",
+            "fullname": "Administrator",
             "created_at": None  # Will be set by MongoDB
         }
         
@@ -68,7 +68,7 @@ def seed_dieticians():
             "username": "testuser",
             "password": hashed_password,
             "email": "test@dietician.com",
-            "full_name": "Test Dietician",
+            "fullname": "Test Dietician",
             "created_at": None
         }
         

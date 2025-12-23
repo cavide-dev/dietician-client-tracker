@@ -852,4 +852,26 @@ QPlainTextEdit#txt_notes {
     padding: 8px;
 }
 
+/* ====================================================
+ * DASHBOARD FONT HIERARCHY
+ * ====================================================
+ */
+
+/* Level 1: Greeting - Largest, Most Prominent */
+QLabel#label_greeting {
+    color: #1D1D1D;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Level 2: Dashboard Title - Medium */
+QLabel#label_dashboard_title {
+    color: #1D1D1D;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
 

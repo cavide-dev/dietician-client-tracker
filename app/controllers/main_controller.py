@@ -57,6 +57,10 @@ class MainController(QMainWindow):
         # Show the dashboard page by default on startup.
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
         
+        # Set greeting with user's full name
+        user_fullname = self.current_user.get("fullname", "User") if self.current_user else "User"
+        self.label_greeting.setText(f"Hi, {user_fullname}!")
+        
         # Show placeholder "Loading..." immediately - don't block UI
         self.label_total_clients.setText("Loading...")
         self.label_total_measurements.setText("Loading...")
