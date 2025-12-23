@@ -625,3 +625,69 @@ QTextEdit {
 QTextEdit:focus {
     border: 1px solid #34C759;
 }
+
+/* ====================================================
+ * LOGIN WINDOW STYLING
+ * ====================================================
+ */
+
+/* Main window background for login screen */
+LoginWindow {
+    background-color: #F5F5F7;
+}
+
+/* White card container */
+QWidget#card_login {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #D1D1D6;
+}
+
+/* Label styling for login window */
+LoginWindow QLabel#label_title {
+    color: #1D1D1D;
+}
+
+LoginWindow QLabel#label_subtitle {
+    color: #8E8E93;
+}
+
+LoginWindow QLabel#label_username {
+    color: #1D1D1D;
+}
+
+LoginWindow QLabel#label_password {
+    color: #1D1D1D;
+}
+
+LoginWindow QLabel#label_no_account {
+    color: #8E8E93;
+}
+
+/* Error message styling */
+LoginWindow QLabel#label_error {
+    color: #FF3B30;
+}
+
+/* Success message styling (green) */
+LoginWindow QLabel#label_error[text*="✅"] {
+    color: #34C759;
+}
+
+/* Sign Up link button styling */
+LoginWindow QPushButton#btn_signup_link {
+    background-color: transparent;
+    color: #34C759;
+    border: none;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+LoginWindow QPushButton#btn_signup_link:hover {
+    color: #2FBF52;
+}
+
+LoginWindow QPushButton#btn_signup_link:pressed {
+    color: #2AA84A;
+}
+
