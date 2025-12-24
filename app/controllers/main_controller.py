@@ -56,6 +56,7 @@ class MainController(QMainWindow):
         self.current_diet_id = None  # For tracking which diet is being edited
         self.stats_container = None  # Will hold the Stats container
         self.trend_chart = None  # Will hold the chart widget
+        self.current_theme = "Light"  # Track current theme for new charts
         self.empty_state_diet = None  # Will hold the empty state widget
         self.empty_state_measurements = None  # Will hold the empty state widget for measurements
         
@@ -553,6 +554,7 @@ class MainController(QMainWindow):
                     self.trend_chart = None
                 
                 self.trend_chart = TrendChart()
+                self.trend_chart.apply_theme(self.current_theme)
                 tab_overview.layout().insertWidget(1, self.trend_chart)
                 self.trend_chart.plot_trends(measurements)
                 
@@ -796,11 +798,14 @@ class MainController(QMainWindow):
                 # Remove old Chart and recreate
                 if self.trend_chart is not None:
                     tab_overview.layout().removeWidget(self.trend_chart)
+                    if self.trend_chart in self.trend_charts:
+                        self.trend_charts.remove(self.trend_chart)
                     self.trend_chart.deleteLater()
                     self.trend_chart = None
                     tab_overview.layout().update()  # Force layout update
                 
                 self.trend_chart = TrendChart()
+                self.trend_chart.apply_theme(self.current_theme)
                 tab_overview.layout().insertWidget(1, self.trend_chart)
                 self.trend_chart.plot_trends(measurements)
                 
@@ -1109,6 +1114,7 @@ class MainController(QMainWindow):
             tab_overview.layout().update()
         
         self.trend_chart = TrendChart()
+        self.trend_chart.apply_theme(self.current_theme)
         tab_overview.layout().insertWidget(1, self.trend_chart)
         self.trend_chart.plot_trends(measurements)
         
@@ -1746,7 +1752,10 @@ class MainController(QMainWindow):
             from PyQt5.QtWidgets import QApplication
             QApplication.instance().setStyleSheet(qss_content)
             
-            # Apply theme to chart widget
+            # Store current theme for new chart creation
+            self.current_theme = theme_name
+            
+            # Apply theme to active chart widget
             if self.trend_chart is not None:
                 self.trend_chart.apply_theme(theme_name)
             

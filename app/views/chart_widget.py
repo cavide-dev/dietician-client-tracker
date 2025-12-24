@@ -13,6 +13,7 @@ class TrendChart(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.current_theme = "Light"
+        self.last_measurements = []  # Store for replot on theme change
         self.setup_ui()
     
     def setup_ui(self):
@@ -31,6 +32,9 @@ class TrendChart(QWidget):
         Args:
             measurements (list): List of measurement documents from MongoDB
         """
+        
+        # Store measurements for replot on theme change
+        self.last_measurements = measurements
         
         # ===== PROBLEM 1: Check if we have enough data =====
         if not measurements or len(measurements) < 2:
@@ -80,10 +84,14 @@ class TrendChart(QWidget):
             bg_color = '#2A2A2A'
             text_color = '#E5E5E5'
             grid_color = '#444444'
+            blue_color = '#7EB3FF'  # Lighter blue for dark theme
+            red_color = '#FF6B6B'   # Lighter red for dark theme
         else:
             bg_color = '#FFFFFF'
             text_color = '#1D1D1D'
             grid_color = '#CCCCCC'
+            blue_color = '#0052CC'  # Standard blue for light theme
+            red_color = '#CC0000'   # Standard red for light theme
         
         figure.patch.set_facecolor(bg_color)
         
@@ -93,24 +101,24 @@ class TrendChart(QWidget):
         ax2 = ax1.twinx()  # Right Y-axis
         
         # ===== Plot on Left Y-axis (Weight + Muscle) =====
-        ax1.plot(dates, weights, 'b-o', linewidth=2, markersize=6, label='Weight (kg)')
+        ax1.plot(dates, weights, color=blue_color, marker='o', linewidth=2, markersize=6, label='Weight (kg)')
         ax1.plot(dates, muscles, 'g-s', linewidth=2, markersize=6, label='Muscle (kg)')
-        ax1.set_ylabel('Weight & Muscle (kg)', color='b', fontsize=10, fontweight='bold')
-        ax1.tick_params(axis='y', labelcolor='b')
+        ax1.set_ylabel('Weight & Muscle (kg)', color=blue_color, fontsize=10, fontweight='bold')
+        ax1.tick_params(axis='y', labelcolor=blue_color)
         ax1.tick_params(axis='x', colors=text_color)
         ax1.xaxis.label.set_color(text_color)
-        ax1.yaxis.label.set_color('b')
+        ax1.yaxis.label.set_color(blue_color)
         ax1.spines['bottom'].set_color(text_color)
-        ax1.spines['left'].set_color('b')
+        ax1.spines['left'].set_color(blue_color)
         ax1.spines['top'].set_visible(False)
         ax1.spines['right'].set_visible(False)
         ax1.grid(True, alpha=0.3, color=grid_color)
         
         # ===== Plot on Right Y-axis (Body Fat) =====
-        ax2.plot(dates, body_fats, 'r-^', linewidth=2, markersize=6, label='Body Fat (%)')
-        ax2.set_ylabel('Body Fat (%)', color='r', fontsize=10, fontweight='bold')
-        ax2.tick_params(axis='y', labelcolor='r')
-        ax2.spines['right'].set_color('r')
+        ax2.plot(dates, body_fats, color=red_color, marker='^', linewidth=2, markersize=6, label='Body Fat (%)')
+        ax2.set_ylabel('Body Fat (%)', color=red_color, fontsize=10, fontweight='bold')
+        ax2.tick_params(axis='y', labelcolor=red_color)
+        ax2.spines['right'].set_color(red_color)
         
         # ===== Labels & Title =====
         ax1.set_xlabel('', fontsize=10, fontweight='bold')
@@ -145,4 +153,6 @@ class TrendChart(QWidget):
     def apply_theme(self, theme_name):
         """Apply theme to chart and refresh"""
         self.current_theme = theme_name
-        # Chart will be redrawn on next update
+        # Redraw chart with new theme
+        if self.last_measurements:
+            self.plot_trends(self.last_measurements)
