@@ -6,6 +6,13 @@
  * Focus: Simplicity, readability, and user comfort
  */
 
+/* Login Window Title */
+QLabel#label_title {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #000000;
+}
+
 /* 
  * COLOR PALETTE - Apple Design System
  * ====================================================
@@ -983,7 +990,7 @@ QPushButton#btn_cancel_dialog:hover {
 /* Error labels (login) */
 QLabel#label_error_login {
     color: #FF3B30;
-    font-weight: bold;
+    font: bold 9pt;
 }
 
 /* Delete diet buttons - RED (active) */
