@@ -172,6 +172,9 @@
           <property name="text">
            <string>Hi, User!</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
          </widget>
         </item>
         <item>
@@ -185,6 +188,12 @@
           </property>
           <property name="text">
            <string>Dashboard</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="margin">
+           <number>0</number>
           </property>
          </widget>
         </item>

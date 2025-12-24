@@ -5,7 +5,7 @@ Handles user authentication and login/signup logic
 
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import hashlib
@@ -119,8 +119,6 @@ class LoginController(QMainWindow):
             
             # Login successful! 
             self.current_user = user
-            self.label_error.setText("Login successful!")
-            self.label_error.setStyleSheet("color: #34C759; font-weight: bold;")
             
             # Emit signal to notify run.py that login was successful
             # Send user data so main_window knows who's logged in
