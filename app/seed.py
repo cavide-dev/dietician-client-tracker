@@ -31,6 +31,7 @@ def add_fake_data():
             "phone": "+1 555 0199",
             "email": "johndoe@example.com",
             "gender": "Male",
+            "birth_date": "1980-05-15",
             "notes": "Type 2 Diabetes patient. Needs low sugar diet.",
             "dietician_username": "admin"
         },
@@ -39,6 +40,7 @@ def add_fake_data():
             "phone": "+1 555 0200",
             "email": "janesmith@example.com",
             "gender": "Female",
+            "birth_date": "1992-08-22",
             "notes": "Vegan diet. Prefers plant-based proteins.",
             "dietician_username": "admin"
         },
@@ -47,6 +49,7 @@ def add_fake_data():
             "phone": "+90 555 123 45 67",
             "email": "ali@example.com",
             "gender": "Male",
+            "birth_date": "1988-03-10",
             "notes": "Gluten intolerant (Celiac).",
             "dietician_username": "admin"
         },
@@ -55,6 +58,7 @@ def add_fake_data():
             "phone": "+34 666 123 456",
             "email": "maria@example.com",
             "gender": "Female",
+            "birth_date": "1995-11-30",
             "notes": "High cholesterol. Needs low-fat diet.",
             "dietician_username": "testuser"
         },
@@ -63,8 +67,18 @@ def add_fake_data():
             "phone": "+20 100 123 4567",
             "email": "ahmed@example.com",
             "gender": "Male",
+            "birth_date": "1985-07-18",
             "notes": "Weight loss program. 30 lbs target.",
             "dietician_username": "testuser"
+        },
+        {
+            "full_name": "홍길동",
+            "phone": "+82 10 1234 5678",
+            "email": "hong.gildong@example.kr",
+            "gender": "Male",
+            "birth_date": "1990-06-25",
+            "notes": "Fitness and muscle building program.",
+            "dietician_username": "admin"
         }
     ]
     

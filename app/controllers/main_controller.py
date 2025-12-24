@@ -1239,7 +1239,7 @@ class MainController(QMainWindow):
     def load_client_dropdown(self):
         """
         Fetches 'full_name' from the database and populates the client selection dropdown
-        on the Diet Plans page.
+        on the Diet Plans page. Only shows clients belonging to the current user.
         """
         # Clear the box first to avoid duplicates
         self.cmb_client_select.clear()
@@ -1247,8 +1247,13 @@ class MainController(QMainWindow):
         self.cmb_client_select.addItem("Select Client...", None) 
 
         try:
-            # Fetch only ID and Full Name from MongoDB
-            clients = self.db['clients'].find({}, {"_id": 1, "full_name": 1})
+            # Build query filter for current user only
+            query = {}
+            if self.current_user:
+                query = {"dietician_username": self.current_user.get("username")}
+            
+            # Fetch only ID and Full Name from MongoDB for current user
+            clients = self.db['clients'].find(query, {"_id": 1, "full_name": 1})
             
             for client in clients:
                 full_name = client.get("full_name", "")
