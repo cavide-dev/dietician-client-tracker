@@ -239,7 +239,17 @@ QLabel#label_birth_date {
 /* Add Client Frame - Client Info */
 QFrame#frame_5 {
     background-color: #FFFFFF;
-    border: 1px solid #FFFFFF;
+    border: 1px solid #E5E5EA;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Settings Page Frames */
+QFrame#frame_2,
+QFrame#frame_3,
+QFrame#frame_4 {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5EA;
     border-radius: 8px;
     padding: 10px;
 }
@@ -915,14 +925,19 @@ QLabel#label_current_user {
  * ====================================================
  */
 
-/* QFrame styling - Settings page frames ONLY (frame_2, frame_3, frame_4) */
-QFrame#frame_2,
-QFrame#frame_3,
-QFrame#frame_4 {
-    background-color: #FFFFFF;  /* White background */
-    border: 1px solid #D1D1D6;  /* Gray border for contrast */
-    border-radius: 8px;          /* Rounded corners */
-    padding: 10px;               /* Content padding */
+/* Settings Page Special Labels - Override frame background */
+QFrame#frame_2 QLabel#label_current_user {
+    background-color: #FFFFFF !important;
+    color: #FF9500;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+
+QFrame#frame_2 QLabel#label_total_clients_2,
+QFrame#frame_3 QLabel#label_total_measurements_2 {
+    background-color: #FFFFFF !important;
+    color: #1D1D1D;
+    padding: 4px 8px;
 }
 
 /* QGroupBox styling - Settings sayfası grupları */
@@ -1130,6 +1145,7 @@ TrendChart {
  * ====================================================
  */
 
+/* Default gray background for other frame labels */
 QFrame#frame_2 QLabel,
 QFrame#frame_3 QLabel,
 QFrame#frame_4 QLabel {
@@ -1140,10 +1156,17 @@ QFrame#frame_4 QLabel {
 /* Exception: label_current_user has custom orange color */
 QFrame#frame_2 QLabel#label_current_user {
     color: #FF9500 !important;
+    background-color: #FFFFFF !important;
 }
 
-QFrame#frame_2 QLabel#label_total_clients_2,
-QFrame#frame_3 QLabel#label_total_measurements_2,
+/* Settings Page Special Labels - WHITE BACKGROUND */
+QFrame#frame_3 QLabel#label_total_clients_2,
+QFrame#frame_3 QLabel#label_total_measurements_2 {
+    background-color: #FFFFFF !important;
+    color: #1D1D1D;
+}
+
+/* Frame 4 labels transparent (language, theme dropdowns) */
 QFrame#frame_4 QLabel {
-    background-color: transparent;
+    background-color: transparent !important;
 }

@@ -636,7 +636,7 @@
           </layout>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="1" column="0" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_buttons">
           <property name="spacing">
            <number>10</number>
