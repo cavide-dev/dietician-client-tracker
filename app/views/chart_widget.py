@@ -12,6 +12,7 @@ class TrendChart(QWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current_theme = "Light"
         self.setup_ui()
     
     def setup_ui(self):
@@ -74,8 +75,21 @@ class TrendChart(QWidget):
         
         figure = Figure(figsize=(8, 4), dpi=100)
         
+        # Set colors based on current theme
+        if self.current_theme == "Dark":
+            bg_color = '#2A2A2A'
+            text_color = '#E5E5E5'
+            grid_color = '#444444'
+        else:
+            bg_color = '#FFFFFF'
+            text_color = '#1D1D1D'
+            grid_color = '#CCCCCC'
+        
+        figure.patch.set_facecolor(bg_color)
+        
         # ===== PROBLEM 2: Two Y-axes =====
         ax1 = figure.add_subplot(111)
+        ax1.set_facecolor(bg_color)
         ax2 = ax1.twinx()  # Right Y-axis
         
         # ===== Plot on Left Y-axis (Weight + Muscle) =====
@@ -83,16 +97,24 @@ class TrendChart(QWidget):
         ax1.plot(dates, muscles, 'g-s', linewidth=2, markersize=6, label='Muscle (kg)')
         ax1.set_ylabel('Weight & Muscle (kg)', color='b', fontsize=10, fontweight='bold')
         ax1.tick_params(axis='y', labelcolor='b')
-        ax1.grid(True, alpha=0.3)
+        ax1.tick_params(axis='x', colors=text_color)
+        ax1.xaxis.label.set_color(text_color)
+        ax1.yaxis.label.set_color('b')
+        ax1.spines['bottom'].set_color(text_color)
+        ax1.spines['left'].set_color('b')
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax1.grid(True, alpha=0.3, color=grid_color)
         
         # ===== Plot on Right Y-axis (Body Fat) =====
         ax2.plot(dates, body_fats, 'r-^', linewidth=2, markersize=6, label='Body Fat (%)')
         ax2.set_ylabel('Body Fat (%)', color='r', fontsize=10, fontweight='bold')
         ax2.tick_params(axis='y', labelcolor='r')
+        ax2.spines['right'].set_color('r')
         
         # ===== Labels & Title =====
         ax1.set_xlabel('', fontsize=10, fontweight='bold')
-        ax1.set_title('Measurement Trends', fontsize=12, fontweight='bold')
+        ax1.set_title('Measurement Trends', fontsize=12, fontweight='bold', color=text_color)
         
         # ===== Rotate X-axis labels =====
         figure.autofmt_xdate(rotation=30, ha='right')
@@ -119,3 +141,8 @@ class TrendChart(QWidget):
         empty_label = QLabel("Need at least 2 measurements to display chart")
         empty_label.setObjectName("chart_empty_message")
         self.layout().addWidget(empty_label)
+
+    def apply_theme(self, theme_name):
+        """Apply theme to chart and refresh"""
+        self.current_theme = theme_name
+        # Chart will be redrawn on next update

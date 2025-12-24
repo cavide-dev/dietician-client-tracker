@@ -140,6 +140,10 @@ class MainController(QMainWindow):
         if hasattr(self, 'btn_delete_diet'):
             self.btn_delete_diet.clicked.connect(self.delete_diet_plan_from_detail)
         
+        # --- THEME SWITCHER ---
+        self.combo_theme.currentIndexChanged.connect(self.on_theme_changed)
+        self.load_theme_preference()
+        
         # --- Default View Settings ---
         self.stack_diet_sub.setCurrentIndex(0)
 
@@ -1680,5 +1684,75 @@ class MainController(QMainWindow):
         dialog = ChangePasswordDialog(parent=self, user_data=self.current_user, db=self.db)
         dialog.exec_()
 
+    def load_theme_preference(self):
+        """Load user's saved theme preference from database, default to Light"""
+        try:
+            if self.db is None or self.current_user is None:
+                self.apply_theme("Light")
+                return
 
+            # Get user's theme preference from database
+            username = self.current_user.get("username")
+            user_doc = self.db['dieticians'].find_one({"username": username})
+            
+            if user_doc and "theme_preference" in user_doc:
+                theme = user_doc["theme_preference"]
+            else:
+                # Default to Light theme
+                theme = "Light"
+            
+            # Set combo_theme to saved theme
+            index = self.combo_theme.findText(theme)
+            if index >= 0:
+                self.combo_theme.setCurrentIndex(index)
+            else:
+                self.apply_theme("Light")
+                
+        except Exception as e:
+            print(f"Error loading theme preference: {e}")
+            self.apply_theme("Light")
 
+    def on_theme_changed(self, index):
+        """Handle theme change from combo_theme dropdown"""
+        theme = self.combo_theme.currentText()
+        self.apply_theme(theme)
+        
+        # Save preference to database
+        try:
+            if self.db is not None and self.current_user is not None:
+                username = self.current_user.get("username")
+                self.db['dieticians'].update_one(
+                    {"username": username},
+                    {"$set": {"theme_preference": theme}}
+                )
+        except Exception as e:
+            print(f"Error saving theme preference: {e}")
+
+    def apply_theme(self, theme_name):
+        """Apply selected theme by loading QSS file"""
+        try:
+            qss_file = None
+            
+            if theme_name == "Dark":
+                qss_file = "assets/styles/dark_theme.qss"
+            else:
+                qss_file = "assets/styles/light_theme.qss"
+            
+            # Read QSS file
+            with open(qss_file, encoding="utf-8") as f:
+                qss_content = f.read()
+            
+            # Apply stylesheet to entire application
+            from PyQt5.QtWidgets import QApplication
+            QApplication.instance().setStyleSheet(qss_content)
+            
+            # Apply theme to chart widget
+            if self.trend_chart is not None:
+                self.trend_chart.apply_theme(theme_name)
+            
+            print(f"Theme changed to: {theme_name}")
+            
+        except FileNotFoundError as e:
+            print(f"Error: Theme file not found - {e}")
+        except Exception as e:
+            print(f"Error applying theme: {e}")
