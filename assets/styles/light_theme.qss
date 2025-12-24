@@ -236,6 +236,14 @@ QLabel#label_birth_date {
     font-weight: 500;
 }
 
+/* Add Client Frame - Client Info */
+QFrame#frame_5 {
+    background-color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+    border-radius: 8px;
+    padding: 10px;
+}
+
 /* ====================================================
  * TABLES (QTableWidget) - Clean Minimal Design
  * ====================================================
@@ -911,10 +919,10 @@ QLabel#label_current_user {
 QFrame#frame_2,
 QFrame#frame_3,
 QFrame#frame_4 {
-    background-color: #F5F5F7;  /* Light gray background */
-    border: 1px solid #E5E5EA;  /* Subtle border */
-    border-radius: 8px;          /* Yumuşak köşeler */
-    padding: 10px;               /* İçerik padding */
+    background-color: #FFFFFF;  /* White background */
+    border: 1px solid #D1D1D6;  /* Gray border for contrast */
+    border-radius: 8px;          /* Rounded corners */
+    padding: 10px;               /* Content padding */
 }
 
 /* QGroupBox styling - Settings sayfası grupları */
