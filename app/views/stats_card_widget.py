@@ -28,7 +28,7 @@ class StatsCard(QWidget):
         title_font.setPointSize(10)
         title_font.setBold(True)
         title_label.setFont(title_font)
-        title_label.setStyleSheet("color: #333;")
+        title_label.setObjectName("stats_card_title")
        
         # Current value label
         value_label = QLabel(f"{self.current_value}{self.unit}")
@@ -36,7 +36,7 @@ class StatsCard(QWidget):
         value_font.setPointSize(18)
         value_font.setBold(True)
         value_label.setFont(value_font)
-        value_label.setStyleSheet("color: #2c3e50;")
+        value_label.setObjectName("stats_card_value")
        
         # Change label (with arrow) - inverted logic
         if not self.inverted:  # Normal: Muscle (pozitif yeşil)
@@ -68,20 +68,14 @@ class StatsCard(QWidget):
         change_font.setPointSize(11)
         change_font.setBold(True)
         change_label.setFont(change_font)
-        change_label.setStyleSheet(f"color: {color};")
+        change_label.setObjectName("stats_card_change")
        
         layout.addWidget(title_label)
         layout.addWidget(value_label)
         layout.addWidget(change_label)
        
-        # Set card style with background
-        self.setStyleSheet("""
-            StatsCard {
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-            }
-        """)
+        # Set card object name for QSS styling
+        self.setObjectName("StatsCard")
        
         self.setLayout(layout)
 

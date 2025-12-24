@@ -93,7 +93,7 @@ class LoginController(QMainWindow):
         # Validation
         if not username or not password:
             self.label_error.setText("Please enter username and password")
-            self.label_error.setStyleSheet("color: #FF3B30; font-weight: bold;")
+            self.label_error.setObjectName("label_error_login")
             return
         
         if self.db is None:
@@ -107,14 +107,14 @@ class LoginController(QMainWindow):
             
             if not user:
                 self.label_error.setText("Invalid password or username")
-                self.label_error.setStyleSheet("color: #FF3B30; font-weight: bold;")
+                self.label_error.setObjectName("label_error_login")
                 return
             
             # Check password
             hashed_password = self.hash_password(password)
             if user['password'] != hashed_password:
                 self.label_error.setText("Invalid password or username")
-                self.label_error.setStyleSheet("color: #FF3B30; font-weight: bold;")
+                self.label_error.setObjectName("label_error_login")
                 return
             
             # Login successful! 

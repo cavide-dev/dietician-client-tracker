@@ -64,23 +64,8 @@ class ChangePasswordDialog(QDialog):
         button_layout.addWidget(btn_save)
         
         btn_cancel = QPushButton("Cancel")
+        btn_cancel.setObjectName("btn_cancel_dialog")
         btn_cancel.clicked.connect(self.reject)
-        btn_cancel.setStyleSheet("""
-            QPushButton {
-                background-color: #E0E0E0;
-                color: #666666;
-                border-radius: 6px;
-                padding: 8px 16px;
-                font-weight: bold;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #D0D0D0;
-            }
-            QPushButton:pressed {
-                background-color: #C0C0C0;
-            }
-        """)
         button_layout.addWidget(btn_cancel)
         
         layout.addLayout(button_layout)

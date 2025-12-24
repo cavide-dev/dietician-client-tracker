@@ -1276,11 +1276,7 @@ class MainController(QMainWindow):
         if self.empty_state_diet is None:
             self.empty_state_diet = QLabel("👤 Select a client to view diet plans")
             self.empty_state_diet.setAlignment(Qt.AlignCenter)
-            self.empty_state_diet.setStyleSheet("""
-                color: #999999;
-                font-size: 14px;
-                padding: 50px;
-            """)
+            self.empty_state_diet.setObjectName("empty_state_diet")
             # Get the parent layout and insert before table
             layout = self.table_diet_history.parent().layout()
             table_index = layout.indexOf(self.table_diet_history)
@@ -1303,11 +1299,7 @@ class MainController(QMainWindow):
         if self.empty_state_measurements is None:
             self.empty_state_measurements = QLabel("📊 No measurements recorded. Add your first measurement to get started.")
             self.empty_state_measurements.setAlignment(Qt.AlignCenter)
-            self.empty_state_measurements.setStyleSheet("""
-                color: #999999;
-                font-size: 16px;
-                padding: 100px;
-            """)
+            self.empty_state_measurements.setObjectName("empty_state_measurements")
             # Get the parent layout and insert before table
             layout = self.table_measurements.parent().layout()
             table_index = layout.indexOf(self.table_measurements)
@@ -1507,7 +1499,7 @@ class MainController(QMainWindow):
              # 6. Enable delete button (we're editing, not creating)
             if hasattr(self, 'btn_delete_diet'):
                 self.btn_delete_diet.setEnabled(True)
-                self.btn_delete_diet.setStyleSheet("background-color: #ff4444; color: white;")
+                self.btn_delete_diet.setObjectName("btn_delete_diet_danger")
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Could not open diet: {e}")
@@ -1640,7 +1632,7 @@ class MainController(QMainWindow):
         # Disable delete button (no diet to delete)
         if hasattr(self, 'btn_delete_diet'):
             self.btn_delete_diet.setEnabled(False)
-            self.btn_delete_diet.setStyleSheet("background-color: #cccccc; color: gray;")
+            self.btn_delete_diet.setObjectName("btn_delete_diet_inactive")
         
         # Go to form page
         self.stack_diet_sub.setCurrentIndex(1)

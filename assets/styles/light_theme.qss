@@ -966,4 +966,89 @@ QComboBox QAbstractItemView::item:selected {
     color: #FFFFFF;
 }
 
+/* Cancel buttons in dialogs */
+QPushButton#btn_cancel_dialog {
+    background-color: #E0E0E0;
+    color: #333333;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+QPushButton#btn_cancel_dialog:hover {
+    background-color: #D0D0D0;
+}
+
+/* Error labels (login) */
+QLabel#label_error_login {
+    color: #FF3B30;
+    font-weight: bold;
+}
+
+/* Delete diet buttons - RED (active) */
+QPushButton#btn_delete_diet_danger {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+QPushButton#btn_delete_diet_danger:hover {
+    background-color: #ee2222;
+}
+
+/* Delete diet buttons - GRAY (inactive/disabled) */
+QPushButton#btn_delete_diet_inactive {
+    background-color: #cccccc;
+    color: gray;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+QPushButton#btn_delete_diet_inactive:hover {
+    background-color: #bbbbbb;
+}
+
+/* Stats Card Widget */
+StatsCard {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+QLabel#stats_card_title {
+    color: #333;
+}
+
+QLabel#stats_card_value {
+    color: #2c3e50;
+}
+
+QLabel#stats_card_change {
+    color: #27ae60;  /* Default green for positive changes */
+}
+
+/* Chart Empty Message */
+QLabel#chart_empty_message {
+    color: #999;
+    font-style: italic;
+}
+
+/* Empty State Labels */
+QLabel#empty_state_diet {
+    color: #999999;
+    font-size: 14px;
+    padding: 50px;
+}
+
+QLabel#empty_state_measurements {
+    color: #999999;
+    font-size: 16px;
+    padding: 100px;
+}
 

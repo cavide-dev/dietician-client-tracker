@@ -117,5 +117,5 @@ class TrendChart(QWidget):
         self.canvas = None
         # Show message
         empty_label = QLabel("Need at least 2 measurements to display chart")
-        empty_label.setStyleSheet("color: #999; font-style: italic;")
+        empty_label.setObjectName("chart_empty_message")
         self.layout().addWidget(empty_label)
