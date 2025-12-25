@@ -1124,3 +1124,41 @@ QFrame#frame_3 QLabel#label_total_measurements_2,
 QFrame#frame_4 QLabel {
     background-color: transparent;
 }
+
+/* ====================================================
+ * DIET TABLE STATUS LABELS - Dynamic Property Styling
+ * ====================================================
+ */
+/* Inside dark_theme.qss */
+
+QLabel[status_type="active"] {
+    /* 1. Using RGBA for transparency (Last number is opacity 0-1) */
+    background-color: rgba(10, 132, 255, 0.25); /* 25% Opacity Blue */
+    
+    /* 2. Making text color bright blue */
+    color: #64D2FF; 
+    
+    font-weight: bold;
+    font-family: "Segoe UI", sans-serif;
+    
+    /* 3. Increase radius for full rounded "Pill" look */
+    border-radius: 10px; 
+    
+    /* 4. CRITICAL POINT: Using margin to shrink from edges */
+    /* This prevents it from filling the whole cell, making it look like a button */
+    margin: 1px 20px; 
+    
+    /* 5. Padding to center the text */
+    padding: 2px 10px;
+
+    min-height: 20px;
+}
+
+QLabel[status_type="passive"] {
+    color: #6e6e73;
+    background-color: rgba(255, 255, 255, 0.05); /* Very subtle gray background */
+    border-radius: 10px;
+    margin: 1px 20px;
+    padding: 2px 10px;
+    min-height: 20px;
+}

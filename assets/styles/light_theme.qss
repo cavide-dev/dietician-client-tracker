@@ -1170,3 +1170,45 @@ QFrame#frame_3 QLabel#label_total_measurements_2 {
 QFrame#frame_4 QLabel {
     background-color: transparent !important;
 }
+
+/* ====================================================
+ * DIET TABLE STATUS LABELS - Dynamic Property Styling
+ * ====================================================
+ */
+QLabel[status_type="active"] {
+    /* 1. GLASS EFFECT (Light Theme): */
+    /* Background: Very light and transparent version of Apple Blue (15% Opacity) */
+    background-color: rgba(0, 122, 255, 0.15); 
+    
+    /* 2. Text Color: DARK and CLEAR Blue for readability on light background */
+    color: #007AFF; 
+    
+    font-weight: bold;
+    font-family: "Segoe UI", sans-serif;
+    
+    /* 3. Rounded Corners (Pill Shape) */
+    border-radius: 10px;
+
+    /* 4. POSITIONING (Prevents squashing) */
+    /* Vertical margin 1px to fit in the row */
+    /* Horizontal margin 20px to center it like a button */
+    margin: 1px 20px; 
+    
+    /* 5. Inner Padding (For fuller look) */
+    padding: 2px 10px;
+    
+    /* Guaranteed minimum height */
+    min-height: 20px;
+}
+
+QLabel[status_type="passive"] {
+    /* Passive text color (Gray) */
+    color: #48484A;
+    background-color: rgba(118, 118, 128, 0.15);
+    
+    /* Keep the same margins to maintain alignment */
+    margin: 1px 20px; 
+    padding: 2px 10px;
+    min-height: 20px;
+    border-radius: 10px;
+}

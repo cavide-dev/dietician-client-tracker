@@ -1418,27 +1418,13 @@ class MainController(QMainWindow):
 
             # 3. Loop through results and add rows
             for diet in diets:
-                # Get the current row count (e.g., 0, then 1, then 2...)
                 row_position = self.table_diet_history.rowCount()
-                
-                # Create a new empty row at that position
                 self.table_diet_history.insertRow(row_position)
                 
-                # --- Prepare Data ---
-                # Title
                 title = diet.get("title", "No Title")
-                
-                # Date (Format: YYYY-MM-DD)
                 raw_date = diet.get("created_at")
-                if raw_date:
-                    date_str = raw_date.strftime("%Y-%m-%d")
-                else:
-                    date_str = "-"
-                
-                # Status (Active/Archived)
+                date_str = raw_date.strftime("%Y-%m-%d") if raw_date else "-"
                 status = diet.get("status", "Active")
-                
-                # --- Create Cells (Items) ---
                 
                 # Column 0: Date
                 date_item = QTableWidgetItem(date_str)
@@ -1448,13 +1434,14 @@ class MainController(QMainWindow):
                 title_item = QTableWidgetItem(title)
                 self.table_diet_history.setItem(row_position, 1, title_item)
                 
-                # Column 2: Status
-                status_item = QTableWidgetItem(status)
-                self.table_diet_history.setItem(row_position, 2, status_item)
+                # Column 2: Status - Using QLabel with Dynamic Property for QSS styling
+                status_label = QLabel(status)
+                status_label.setAlignment(Qt.AlignCenter)
+                # Set dynamic property - QSS will use this to determine styling
+                status_label.setProperty("status_type", status.lower())
+                self.table_diet_history.setCellWidget(row_position, 2, status_label)
                 
-                # --- CRITICAL STEP: Hidden ID ---
-                # We store the Diet's unique ID in the first cell invisibly.
-                # This allows us to know WHICH diet to open/edit later.
+                # Store hidden ID in first column
                 self.table_diet_history.item(row_position, 0).setData(Qt.UserRole, str(diet["_id"]))
                 
         except Exception as e:
