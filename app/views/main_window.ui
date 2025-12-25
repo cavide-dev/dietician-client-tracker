@@ -193,7 +193,7 @@
           <item>
            <widget class="QGroupBox" name="card_total_clients">
             <property name="title">
-             <string>👥 Total Clients</string>
+             <string>Total Clients</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_card1">
              <item>
@@ -222,7 +222,7 @@
           <item>
            <widget class="QGroupBox" name="card_total_measurements">
             <property name="title">
-             <string>📊 Total Measurements</string>
+             <string>Total Measurements</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_card2">
              <item>
@@ -251,7 +251,7 @@
           <item>
            <widget class="QGroupBox" name="card_active_diets">
             <property name="title">
-             <string>🥗 Active Diets</string>
+             <string>Active Diets</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_card3">
              <item>
@@ -282,7 +282,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_recent_activity">
           <property name="title">
-           <string>📋 Recent Activity</string>
+           <string>Recent Activity</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_activity">
            <item>
@@ -1011,7 +1011,7 @@
         <item row="1" column="0">
          <widget class="QGroupBox" name="groupBox_10">
           <property name="title">
-           <string>📊 DATA &amp;&amp; EXPORT</string>
+           <string>Data &amp; Export</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_12">
            <item>
@@ -1074,7 +1074,7 @@
         <item row="1" column="1">
          <widget class="QGroupBox" name="groupBox_9">
           <property name="title">
-           <string>🌍 PREFERENCES</string>
+           <string>Preferences</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
@@ -1091,7 +1091,7 @@
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="text">
-                   <string>🌐 Language:</string>
+                   <string>Language</string>
                   </property>
                  </widget>
                 </item>
@@ -1124,7 +1124,7 @@
                 <item>
                  <widget class="QLabel" name="label_2">
                   <property name="text">
-                   <string>🎨 Theme:</string>
+                   <string>Theme</string>
                   </property>
                  </widget>
                 </item>
@@ -1156,7 +1156,7 @@
         <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="group_profile">
           <property name="title">
-           <string>👤 PROFILE</string>
+           <string>Profile</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>

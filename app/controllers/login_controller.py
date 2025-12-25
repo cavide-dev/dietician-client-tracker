@@ -96,11 +96,11 @@ class LoginController(QMainWindow):
         
         # Validation
         if not username or not password:
-            self.label_error.setText("Please enter username and password")
+            self.label_error.setText(TranslationService.get("login.invalid_credentials", "Please enter username and password"))
             return
         
         if self.db is None:
-            self.label_error.setText("Database connection error")
+            self.label_error.setText(TranslationService.get("common.db_error", "Database connection error"))
             return
         
         try:
@@ -109,13 +109,13 @@ class LoginController(QMainWindow):
             user = dieticians.find_one({"username": username})
             
             if not user:
-                self.label_error.setText("Invalid password or username")
+                self.label_error.setText(TranslationService.get("login.invalid_credentials", "Invalid password or username"))
                 return
             
             # Check password
             hashed_password = self.hash_password(password)
             if user['password'] != hashed_password:
-                self.label_error.setText("Invalid password or username")
+                self.label_error.setText(TranslationService.get("login.invalid_credentials", "Invalid password or username"))
                 return
             
             # Login successful! 
@@ -125,9 +125,18 @@ class LoginController(QMainWindow):
             user_language = user.get("preferred_language", "en")
             TranslationService.initialize(language=user_language, debug=False)
             
+            # Convert user document to clean dict (remove ObjectId and other non-serializable objects)
+            user_data = {
+                "username": user.get("username"),
+                "fullname": user.get("fullname"),
+                "email": user.get("email"),
+                "preferred_language": user.get("preferred_language", "en"),
+                "theme_preference": user.get("theme_preference", "Light")
+            }
+            
             # Emit signal to notify run.py that login was successful
             # Send user data so main_window knows who's logged in
-            self.login_successful.emit(user)
+            self.login_successful.emit(user_data)
             
             # Close this window
             self.close()

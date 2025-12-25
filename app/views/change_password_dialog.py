@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from app.services.validation_service import ValidationService
 from app.services.auth_service import AuthService
+from app.i18n.translations import TranslationService
 
 
 class ChangePasswordDialog(QDialog):
@@ -23,7 +24,7 @@ class ChangePasswordDialog(QDialog):
         super().__init__(parent)
         self.user_data = user_data
         self.db = db
-        self.setWindowTitle("Change Password")
+        self.setWindowTitle(TranslationService.get("profile_dialogs.change_password_title", "Change Password"))
         self.setGeometry(0, 0, 400, 250)
         
         self.init_ui()
@@ -40,19 +41,19 @@ class ChangePasswordDialog(QDialog):
         layout = QVBoxLayout()
         
         # Current Password
-        layout.addWidget(QLabel("Current Password:"))
+        layout.addWidget(QLabel(TranslationService.get("profile_dialogs.old_password_label", "Current Password") + ":"))
         self.input_current = QLineEdit()
         self.input_current.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.input_current)
         
         # New Password
-        layout.addWidget(QLabel("New Password:"))
+        layout.addWidget(QLabel(TranslationService.get("profile_dialogs.new_password_label", "New Password") + ":"))
         self.input_new = QLineEdit()
         self.input_new.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.input_new)
         
         # Confirm Password
-        layout.addWidget(QLabel("Confirm Password:"))
+        layout.addWidget(QLabel(TranslationService.get("register.confirm_password", "Confirm Password") + ":"))
         self.input_confirm = QLineEdit()
         self.input_confirm.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.input_confirm)
@@ -60,11 +61,11 @@ class ChangePasswordDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         
-        btn_save = QPushButton("Change Password")
+        btn_save = QPushButton(TranslationService.get("profile_dialogs.change_password_button", "Change Password"))
         btn_save.clicked.connect(self.change_password)
         button_layout.addWidget(btn_save)
         
-        btn_cancel = QPushButton("Cancel")
+        btn_cancel = QPushButton(TranslationService.get("common.cancel", "Cancel"))
         btn_cancel.setObjectName("btn_cancel_dialog")
         btn_cancel.clicked.connect(self.reject)
         button_layout.addWidget(btn_cancel)

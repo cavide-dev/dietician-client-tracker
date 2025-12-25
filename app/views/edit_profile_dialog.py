@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from app.services.validation_service import ValidationService
 from app.services.auth_service import AuthService
+from app.i18n.translations import TranslationService
 
 
 class EditProfileDialog(QDialog):
@@ -23,7 +24,7 @@ class EditProfileDialog(QDialog):
         super().__init__(parent)
         self.user_data = user_data
         self.db = db
-        self.setWindowTitle("Edit Profile")
+        self.setWindowTitle(TranslationService.get("profile_dialogs.edit_profile_title", "Edit Profile"))
         self.setGeometry(0, 0, 400, 200)
         
         # Store original values
@@ -44,13 +45,13 @@ class EditProfileDialog(QDialog):
         layout = QVBoxLayout()
         
         # Full Name
-        layout.addWidget(QLabel("Full Name:"))
+        layout.addWidget(QLabel(TranslationService.get("profile_dialogs.fullname_label", "Full Name") + ":"))
         self.input_fullname = QLineEdit()
         self.input_fullname.setText(self.original_fullname)
         layout.addWidget(self.input_fullname)
         
         # Email
-        layout.addWidget(QLabel("Email:"))
+        layout.addWidget(QLabel(TranslationService.get("clients.email", "Email") + ":"))
         self.input_email = QLineEdit()
         self.input_email.setText(self.original_email)
         layout.addWidget(self.input_email)
@@ -58,11 +59,11 @@ class EditProfileDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         
-        btn_save = QPushButton("Save Changes")
+        btn_save = QPushButton(TranslationService.get("profile_dialogs.save_button", "Save Changes"))
         btn_save.clicked.connect(self.save_changes)
         button_layout.addWidget(btn_save)
         
-        btn_cancel = QPushButton("Cancel")
+        btn_cancel = QPushButton(TranslationService.get("common.cancel", "Cancel"))
         btn_cancel.setObjectName("btn_cancel_dialog")
         btn_cancel.clicked.connect(self.reject)
         button_layout.addWidget(btn_cancel)

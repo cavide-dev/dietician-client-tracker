@@ -6,6 +6,7 @@ Responsible for: Adding, editing, deleting measurements and calculating stats.
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
 from app.services.validation_service import ValidationService
 from app.services.calculation_service import CalculationService
+from app.i18n.translations import TranslationService
 from app.views.stats_card_widget import StatsCardContainer
 from app.views.chart_widget import TrendChart
 
@@ -158,7 +159,7 @@ class MeasurementController:
             if 0 <= row < len(measurements):
                 measurement_id = measurements[row]['_id']
                 self.main.db['measurements'].delete_one({'_id': measurement_id})
-                QMessageBox.information(self.main, "Success", "Measurement deleted successfully!")
+                QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("measurements.measurement_deleted", "Measurement deleted successfully!"))
                 self.load_client_measurements()
                 self.refresh_stats_and_chart()
 
@@ -182,6 +183,21 @@ class MeasurementController:
         # Recreate stats if we have enough data
         if len(measurements) >= 2:
             self.main.stats_container = StatsCardContainer()
+            
+            # Set translation function for stat card titles
+            def translate_stat_title(title):
+                translation_keys = {
+                    "Weight": "weight",
+                    "Body Fat": "body_fat",
+                    "Muscle": "muscle"
+                }
+                if title in translation_keys:
+                    full_text = TranslationService.get(f"measurements.{translation_keys[title]}")
+                    result = full_text.split(" (")[0]
+                    return result
+                return title
+            
+            self.main.stats_container.set_title_translator(translate_stat_title)
             tab_overview.layout().insertWidget(0, self.main.stats_container)
             
             latest = measurements[0]
@@ -227,7 +243,7 @@ class MeasurementController:
         if dialog.exec_():
             data = dialog.get_data()
             if self.add_measurement_entry(self.main.current_client_id, data):
-                QMessageBox.information(self.main, "Success", "Measurement added successfully!")
+                QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("measurements.measurement_added", "Measurement added successfully!"))
                 self.load_client_measurements()
                 self.refresh_stats_and_chart()
             else:
@@ -252,7 +268,7 @@ class MeasurementController:
                         {'_id': measurement['_id']},
                         {'$set': data}
                     )
-                    QMessageBox.information(self.main, "Success", "Measurement updated successfully!")
+                    QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("measurements.measurement_updated", "Measurement updated successfully!"))
                     self.load_client_measurements()
                     self.refresh_stats_and_chart()
                 except Exception as e:

@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from app.services.validation_service import ValidationService
+from app.i18n.translations import TranslationService
 import hashlib
 import re
 import os
@@ -122,11 +123,11 @@ class SignupController(QMainWindow):
             return
         
         if password != confirm_password:
-            self.label_error.setText("Passwords do not match")
+            self.label_error.setText(TranslationService.get("register.password_mismatch", "Passwords do not match"))
             return
         
         if self.db is None:
-            self.label_error.setText("Database connection error")
+            self.label_error.setText(TranslationService.get("common.db_error", "Database connection error"))
             return
         
         try:

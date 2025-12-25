@@ -2,7 +2,19 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+import matplotlib
 from datetime import datetime
+from app.i18n.translations import TranslationService
+
+# Set font for Unicode support (Korean, Turkish, etc.)
+# Windows fonts that support CJK characters
+cjk_fonts = ['Malgun Gothic', 'SimSun', 'NotoSansCJK', 'DejaVu Sans']
+for font in cjk_fonts:
+    try:
+        matplotlib.rcParams['font.sans-serif'] = [font] + [f for f in matplotlib.rcParams['font.sans-serif'] if f != font]
+        break
+    except:
+        pass
 
 class TrendChart(QWidget):
     """
@@ -101,8 +113,12 @@ class TrendChart(QWidget):
         ax2 = ax1.twinx()  # Right Y-axis
         
         # ===== Plot on Left Y-axis (Weight + Muscle) =====
-        ax1.plot(dates, weights, color=blue_color, marker='o', linewidth=2, markersize=6, label='Weight (kg)')
-        ax1.plot(dates, muscles, 'g-s', linewidth=2, markersize=6, label='Muscle (kg)')
+        weight_label = TranslationService.get("measurements.weight", "Weight (kg)")
+        muscle_label = TranslationService.get("measurements.muscle", "Muscle (kg)")
+        body_fat_label = TranslationService.get("measurements.body_fat", "Body Fat (%)")
+        
+        ax1.plot(dates, weights, color=blue_color, marker='o', linewidth=2, markersize=6, label=weight_label)
+        ax1.plot(dates, muscles, 'g-s', linewidth=2, markersize=6, label=muscle_label)
         ax1.set_ylabel('Weight & Muscle (kg)', color=blue_color, fontsize=10, fontweight='bold')
         ax1.tick_params(axis='y', labelcolor=blue_color)
         ax1.tick_params(axis='x', colors=text_color)
@@ -115,14 +131,15 @@ class TrendChart(QWidget):
         ax1.grid(True, alpha=0.3, color=grid_color)
         
         # ===== Plot on Right Y-axis (Body Fat) =====
-        ax2.plot(dates, body_fats, color=red_color, marker='^', linewidth=2, markersize=6, label='Body Fat (%)')
+        ax2.plot(dates, body_fats, color=red_color, marker='^', linewidth=2, markersize=6, label=body_fat_label)
         ax2.set_ylabel('Body Fat (%)', color=red_color, fontsize=10, fontweight='bold')
         ax2.tick_params(axis='y', labelcolor=red_color)
         ax2.spines['right'].set_color(red_color)
         
         # ===== Labels & Title =====
         ax1.set_xlabel('', fontsize=10, fontweight='bold')
-        ax1.set_title('Measurement Trends', fontsize=12, fontweight='bold', color=text_color)
+        chart_title = TranslationService.get("measurements.trends", "Measurement Trends")
+        ax1.set_title(chart_title, fontsize=12, fontweight='bold', color=text_color)
         
         # ===== Rotate X-axis labels =====
         figure.autofmt_xdate(rotation=30, ha='right')

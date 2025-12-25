@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QDialogButtonBox
                              QLabel, QDoubleSpinBox, QDateEdit, QTextEdit, QMessageBox)
 from PyQt5.QtCore import Qt, QDate
 from app.services.validation_service import ValidationService
+from app.i18n.translations import TranslationService
 
 class MeasurementDialog(QDialog):
     """
@@ -17,10 +18,10 @@ class MeasurementDialog(QDialog):
         
         # If editing, set title to "Edit Measurement", else "Add New Measurement"
         if measurement_data:
-            self.setWindowTitle("Edit Measurement")
+            self.setWindowTitle(TranslationService.get("measurements.edit_title", "Edit Measurement"))
             self.is_edit_mode = True
         else:
-            self.setWindowTitle("Add New Measurement")
+            self.setWindowTitle(TranslationService.get("measurements.add_title", "Add New Measurement"))
             self.is_edit_mode = False
         
         self.measurement_data = measurement_data
@@ -38,53 +39,53 @@ class MeasurementDialog(QDialog):
         self.input_date = QDateEdit()
         self.input_date.setDate(QDate.currentDate()) # Defaults to today
         self.input_date.setCalendarPopup(True)       # Shows a calendar dropdown
-        form_layout.addRow("Date:", self.input_date)
+        form_layout.addRow(TranslationService.get("measurements.date", "Date") + ":", self.input_date)
 
         # --- CATEGORY 1: BASIC METRICS ---
         
         # Weight (kg)
         self.input_weight = QDoubleSpinBox()
         self.input_weight.setRange(0, 600)
-        form_layout.addRow("Weight (kg):", self.input_weight)
+        form_layout.addRow(TranslationService.get("measurements.weight", "Weight (kg)") + ":", self.input_weight)
 
         # Height (cm)
         self.input_height = QDoubleSpinBox()
         self.input_height.setRange(0, 250)
-        form_layout.addRow("Height (cm):", self.input_height)
+        form_layout.addRow(TranslationService.get("measurements.height", "Height (cm)") + ":", self.input_height)
 
         # --- CATEGORY 2: BODY COMPOSITION ---
         
         # Body Fat Ratio (%)
         self.input_fat = QDoubleSpinBox()
         self.input_fat.setRange(0, 150)
-        form_layout.addRow("Body Fat Ratio (%):", self.input_fat)
+        form_layout.addRow(TranslationService.get("measurements.body_fat_ratio", "Body Fat Ratio (%)") + ":", self.input_fat)
 
         # Muscle Mass (kg)
         self.input_muscle = QDoubleSpinBox()
         self.input_muscle.setRange(0, 200)
-        form_layout.addRow("Muscle Mass (kg):", self.input_muscle)
+        form_layout.addRow(TranslationService.get("measurements.muscle_mass", "Muscle Mass (kg)") + ":", self.input_muscle)
         
         # Metabolic Age (Years)
         self.input_metabolic_age = QDoubleSpinBox()
         self.input_metabolic_age.setRange(0, 150)
         self.input_metabolic_age.setDecimals(0) # Integer only
-        form_layout.addRow("Metabolic Age (years):", self.input_metabolic_age)
+        form_layout.addRow(TranslationService.get("measurements.metabolic_age", "Metabolic Age (years)") + ":", self.input_metabolic_age)
 
         # BMR (Basal Metabolic Rate) - [NEW]
         self.input_bmr = QDoubleSpinBox()
         self.input_bmr.setRange(0, 5000) 
         self.input_bmr.setDecimals(0)    
-        form_layout.addRow("BMR (kcal):", self.input_bmr)
+        form_layout.addRow(TranslationService.get("measurements.bmr", "BMR (kcal)") + ":", self.input_bmr)
 
         # Visceral Fat Rating (1-59)
         self.input_visceral = QDoubleSpinBox()
         self.input_visceral.setRange(0, 59)
-        form_layout.addRow("Visceral Fat Rating:", self.input_visceral)
+        form_layout.addRow(TranslationService.get("measurements.visceral_fat", "Visceral Fat Rating") + ":", self.input_visceral)
 
         # Water Ratio (%)
         self.input_water = QDoubleSpinBox()
         self.input_water.setRange(0, 100)
-        form_layout.addRow("Water Ratio (%):", self.input_water)
+        form_layout.addRow(TranslationService.get("measurements.water_ratio", "Water Ratio (%)") + ":", self.input_water)
 
         # --- CATEGORY 3: CIRCUMFERENCE MEASUREMENTS ---
         # These are all saved to DB, even if not shown in the main table.
@@ -92,31 +93,31 @@ class MeasurementDialog(QDialog):
         # Waist
         self.input_waist = QDoubleSpinBox()
         self.input_waist.setRange(0, 300)
-        form_layout.addRow("Waist (cm):", self.input_waist)
+        form_layout.addRow(TranslationService.get("measurements.waist", "Waist (cm)") + ":", self.input_waist)
 
         # Hip
         self.input_hip = QDoubleSpinBox()
         self.input_hip.setRange(0, 300)
-        form_layout.addRow("Hip (cm):", self.input_hip)
+        form_layout.addRow(TranslationService.get("measurements.hip", "Hip (cm)") + ":", self.input_hip)
         
         # Chest
         self.input_chest = QDoubleSpinBox()
         self.input_chest.setRange(0, 300)
-        form_layout.addRow("Chest (cm):", self.input_chest)
+        form_layout.addRow(TranslationService.get("measurements.chest", "Chest (cm)") + ":", self.input_chest)
 
         # Arm
         self.input_arm = QDoubleSpinBox()
         self.input_arm.setRange(0, 100)
-        form_layout.addRow("Arm (cm):", self.input_arm)
+        form_layout.addRow(TranslationService.get("measurements.arm", "Arm (cm)") + ":", self.input_arm)
 
         # Thigh
         self.input_thigh = QDoubleSpinBox()
         self.input_thigh.setRange(0, 150)
-        form_layout.addRow("Thigh (cm):", self.input_thigh)
+        form_layout.addRow(TranslationService.get("measurements.thigh", "Thigh (cm)") + ":", self.input_thigh)
 
         # --- NOTES ---
         self.input_notes = QTextEdit()
-        self.input_notes.setPlaceholderText("Enter extra notes here...")
+        self.input_notes.setPlaceholderText(TranslationService.get("measurements.notes_placeholder", "Enter extra notes here..."))
         self.input_notes.setMaximumHeight(60)
         form_layout.addRow("Notes:", self.input_notes)
 

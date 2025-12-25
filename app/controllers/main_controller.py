@@ -94,7 +94,7 @@ class MainController(QMainWindow):
         
         # --- 4. NAVIGATION BUTTONS (Menu Connections) ---
         self.btn_dashboard.clicked.connect(self.show_dashboard)
-        self.btn_clients.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_clients))
+        self.btn_clients.clicked.connect(self.show_clients_page)
         self.btn_diet_plans.clicked.connect(self.switch_to_diet_page)
         self.btn_settings.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_settings))
         
@@ -160,6 +160,8 @@ class MainController(QMainWindow):
         # --- LANGUAGE SWITCHER ---
         # Load language preference FIRST, then connect signal
         self.load_language_preference()
+        # Refresh UI labels immediately after loading language preference
+        self.refresh_ui_labels()
         self.combo_language.currentIndexChanged.connect(self.on_language_changed)
         
         # --- Default View Settings ---
@@ -193,15 +195,15 @@ class MainController(QMainWindow):
             total_clients = self.db['clients'].count_documents(user_filter)
             self.label_total_clients.setText(str(total_clients))
             
-            # Update settings page labels too
-            self.label_total_clients_2.setText(f"Total Clients: {total_clients}")
+            # Update settings page labels too - emoji comes from JSON now
+            self.label_total_clients_2.setText(f"{TranslationService.get('dashboard.total_clients', 'Total Clients')}: {total_clients}")
             
             # Total Measurements (only for current user's clients)
             total_measurements = self.db['measurements'].count_documents(user_filter)
             self.label_total_measurements.setText(str(total_measurements))
             
-            # Update settings page labels too
-            self.label_total_measurements_2.setText(f"Total Measurements: {total_measurements}")
+            # Update settings page labels too - emoji comes from JSON now
+            self.label_total_measurements_2.setText(f"{TranslationService.get('dashboard.total_measurements', 'Total Measurements')}: {total_measurements}")
             
             # Active Diets (status = 'active' AND for current user only)
             diet_filter = {"status": "active"}
@@ -217,7 +219,7 @@ class MainController(QMainWindow):
             # Get recent clients (latest 5 for current user)
             recent_clients = list(self.db['clients'].find(user_filter).sort("_id", -1).limit(5))
             for client in recent_clients:
-                activity_text = f"✓ {client.get('full_name', 'Unknown')} - Client added"
+                activity_text = f"✓ {client.get('full_name', 'Unknown')} - {TranslationService.get('clients.title', 'Client')} {TranslationService.get('messages.added', 'added')}"
                 self.list_recent_activity.addItem(activity_text)
             
             # Get recent measurements (últimas 3 añadidas)
@@ -226,7 +228,7 @@ class MainController(QMainWindow):
                 # Find client name for this measurement
                 client = self.db['clients'].find_one({"_id": measurement.get('client_id')})
                 client_name = client.get('full_name', 'Unknown') if client else 'Unknown'
-                activity_text = f"✓ {client_name} - Measurement added"
+                activity_text = f"✓ {client_name} - {TranslationService.get('measurements.title', 'Measurement')} {TranslationService.get('messages.added', 'added')}"
                 self.list_recent_activity.addItem(activity_text)
             
             # Get recent diet plans (últimos 2 creados)
@@ -235,12 +237,12 @@ class MainController(QMainWindow):
                 # Find client name for this diet
                 client = self.db['clients'].find_one({"_id": diet.get('client_id')})
                 client_name = client.get('full_name', 'Unknown') if client else 'Unknown'
-                activity_text = f"✓ {client_name} - Diet plan created"
+                activity_text = f"✓ {client_name} - {TranslationService.get('diet_plans.title', 'Diet Plan')} {TranslationService.get('messages.created', 'created')}"
                 self.list_recent_activity.addItem(activity_text)
             
             # If no activity, show message
             if self.list_recent_activity.count() == 0:
-                self.list_recent_activity.addItem("No recent activity yet")
+                self.list_recent_activity.addItem(TranslationService.get("messages.no_activity", "No recent activity yet"))
                 
         except Exception as e:
             print(f"Error loading dashboard: {e}")
@@ -251,8 +253,24 @@ class MainController(QMainWindow):
         Show dashboard page and load fresh data.
         Called when Dashboard button is clicked.
         """
-        self.load_dashboard()
         self.stackedWidget.setCurrentWidget(self.page_dashboard)
+        self.refresh_ui_labels()
+        
+        # Show loading state
+        self.label_total_clients.setText("Loading...")
+        self.label_total_measurements.setText("Loading...")
+        self.label_active_diets.setText("Loading...")
+        
+        # Load data asynchronously to prevent UI freeze
+        QTimer.singleShot(50, self.load_dashboard)
+    
+    def show_clients_page(self):
+        """
+        Show clients page.
+        Called when Clients button is clicked.
+        """
+        self.stackedWidget.setCurrentWidget(self.page_clients)
+        self.refresh_ui_labels()
 
     def calculate_age(self, birth_date_str):
         """
@@ -345,6 +363,7 @@ class MainController(QMainWindow):
         # 1. Switch the Main Stacked Widget to the Diet Page
         self.stackedWidget.setCurrentWidget(self.page_diet_plans) 
         
+        self.refresh_ui_labels()  # Refresh UI labels when switching to diet page
         # 2. Reset the Sub-Stacked Widget to the List/Table View (Page 0)
         # This fixes the issue of getting stuck on the 'Add Diet' form 
         # when navigating back to this page.
@@ -568,10 +587,14 @@ class MainController(QMainWindow):
             if self.current_user is None:
                 # Set to first item (English)
                 self.combo_language.setCurrentIndex(0)
+                TranslationService.initialize(language="en", debug=False)
                 return
 
             # Get user's language preference from current_user dict
             language = self.current_user.get("preferred_language", "en")
+            
+            # Initialize TranslationService with user's language
+            TranslationService.initialize(language=language, debug=False)
             
             # Map language code to combo box index
             language_map = {"en": 0, "tr": 1, "ko": 2}
@@ -582,11 +605,15 @@ class MainController(QMainWindow):
             self.combo_language.setCurrentIndex(index)
             self.combo_language.blockSignals(False)
             
+            # Refresh UI labels with the loaded language
+            self.refresh_ui_labels()
+            
             print(f"✓ Language preference loaded: {language}")
                 
         except Exception as e:
             print(f"Error loading language preference: {e}")
             self.combo_language.setCurrentIndex(0)
+            TranslationService.initialize(language="en", debug=False)
 
     def on_language_changed(self, index):
         """Handle language change from combo_language dropdown"""
@@ -610,6 +637,211 @@ class MainController(QMainWindow):
                 print(f"✓ Language changed to: {language_code}")
         except Exception as e:
             print(f"Error saving language preference: {e}")
+        
+        # Refresh UI labels with new language
+        self.refresh_ui_labels()
+        
+        # Refresh stat cards if currently viewing measurements
+        if hasattr(self, 'measurement_controller') and self.measurement_controller:
+            self.measurement_controller.refresh_stats_and_chart()
+
+
+    def refresh_ui_labels(self):
+        """Refresh all UI text labels with current language from TranslationService"""
+        try:
+            # ===== NAVIGATION BUTTONS (LEFT SIDEBAR) =====
+            self.btn_dashboard.setText(TranslationService.get("pages.dashboard", "Dashboard"))
+            self.btn_clients.setText(TranslationService.get("pages.clients", "Clients"))
+            self.btn_diet_plans.setText(TranslationService.get("pages.diet_plans", "Diet Plans"))
+            self.btn_settings.setText(TranslationService.get("pages.settings", "Settings"))
+            self.btn_logout.setText(TranslationService.get("settings.logout", "Logout"))
+            
+            # ===== DASHBOARD PAGE =====
+            # Greeting label
+            if hasattr(self, 'label_greeting'):
+                user_fullname = self.current_user.get('fullname', 'User') if self.current_user else 'User'
+                greeting_text = TranslationService.get("dashboard.greeting", "Welcome")
+                self.label_greeting.setText(f"{greeting_text}, {user_fullname}!")
+            
+            # Dashboard title
+            if hasattr(self, 'TitleLabel'):
+                self.TitleLabel.setText(TranslationService.get("pages.dashboard", "Dashboard"))
+            
+            # Stats labels
+            self.label_total_clients.setText(TranslationService.get("dashboard.total_clients", "Total Clients"))
+            self.label_total_measurements.setText(TranslationService.get("dashboard.total_measurements", "Total Measurements"))
+            self.label_active_diets.setText(TranslationService.get("dashboard.active_diets", "Active Diet Plans"))
+            
+            # Stats card groupbox titles
+            if hasattr(self, 'card_total_clients'):
+                self.card_total_clients.setTitle(TranslationService.get("dashboard.total_clients", "Total Clients"))
+            if hasattr(self, 'card_total_measurements'):
+                self.card_total_measurements.setTitle(TranslationService.get("dashboard.total_measurements", "Total Measurements"))
+            if hasattr(self, 'card_active_diets'):
+                self.card_active_diets.setTitle(TranslationService.get("dashboard.active_diets", "Active Diet Plans"))
+            if hasattr(self, 'groupBox_recent_activity'):
+                self.groupBox_recent_activity.setTitle(TranslationService.get("dashboard.recent_activity", "Recent Activity"))
+            
+            # ===== CLIENTS PAGE =====
+            self.btn_add_new.setText(TranslationService.get("clients.add_client", "Add New Client"))
+            self.btn_delete.setText(TranslationService.get("buttons.delete", "Delete"))
+            self.btn_edit.setText(TranslationService.get("buttons.edit", "Edit"))
+            self.btn_save.setText(TranslationService.get("buttons.save", "Save"))
+            self.btn_cancel.setText(TranslationService.get("buttons.cancel", "Cancel"))
+            self.search_clients.setPlaceholderText(TranslationService.get("placeholders.search_clients", "Search by name..."))
+            
+            # ===== ADD/EDIT CLIENT PAGE =====
+            # Client Info GroupBox
+            if hasattr(self, 'groupBox_11'):
+                self.groupBox_11.setTitle(TranslationService.get("clients.title", "Client Info"))
+            
+            # Client Notes GroupBox
+            if hasattr(self, 'groupBox_8'):
+                self.groupBox_8.setTitle(TranslationService.get("measurements.notes", "Client Notes"))
+            
+            # Form labels
+            if hasattr(self, 'label_name'):
+                self.label_name.setText(TranslationService.get("clients.full_name", "Full Name") + ":")
+            if hasattr(self, 'label_phone'):
+                self.label_phone.setText(TranslationService.get("clients.phone", "Phone") + ":")
+            if hasattr(self, 'label_birth_date'):
+                self.label_birth_date.setText(TranslationService.get("clients.birth_date", "Birth Date") + ":")
+            
+            # Placeholders
+            if hasattr(self, 'txt_name'):
+                self.txt_name.setPlaceholderText(TranslationService.get("placeholders.full_name", "Enter full name"))
+            if hasattr(self, 'txt_phone'):
+                self.txt_phone.setPlaceholderText(TranslationService.get("placeholders.phone", "Enter phone number"))
+            if hasattr(self, 'txt_notes'):
+                self.txt_notes.setPlaceholderText(TranslationService.get("placeholders.notes", "Enter notes..."))
+            
+            # ===== CLIENT DETAIL PAGE =====
+            # Tab titles
+            if hasattr(self, 'tabWidget'):
+                if self.tabWidget.count() >= 1:
+                    self.tabWidget.setTabText(0, TranslationService.get("measurements.overview", "Overview"))
+                if self.tabWidget.count() >= 2:
+                    self.tabWidget.setTabText(1, TranslationService.get("measurements.title", "Measurements"))
+                if self.tabWidget.count() >= 3:
+                    self.tabWidget.setTabText(2, TranslationService.get("measurements.notes", "Notes"))
+            
+            # Age label
+            if hasattr(self, 'lbl_age'):
+                current_age = self.lbl_age.text().replace('...age', '').strip()
+                if current_age and current_age != '...age':
+                    self.lbl_age.setText(f"{TranslationService.get('clients.age', 'Age')}: {current_age}")
+            
+            # Client notes GroupBox in detail
+            if hasattr(self, 'groupBox_7'):
+                self.groupBox_7.setTitle(TranslationService.get("clients.notes", "Notes"))
+            
+            self.btn_back_to_list.setText(TranslationService.get("buttons.back", "Back"))
+            self.btn_add_measurement.setText(TranslationService.get("measurements.add_measurement", "Add Measurement"))
+            
+            # ===== DIET PLANS PAGE =====
+            # Dropdown placeholder
+            if hasattr(self, 'cmb_client_select'):
+                self.cmb_client_select.setPlaceholderText(TranslationService.get("diet_plans.select_client_first", "Select a client..."))
+            
+            self.btn_new_diet.setText(TranslationService.get("diet_plans.add_diet", "Add New Diet"))
+            self.btn_save_diet.setText(TranslationService.get("buttons.save", "Save"))
+            if hasattr(self, 'btn_delete_diet'):
+                self.btn_delete_diet.setText(TranslationService.get("buttons.delete", "Delete"))
+            self.btn_back_to_diet_list.setText(TranslationService.get("buttons.back", "Back"))
+            
+            # Diet plan form GroupBox titles
+            if hasattr(self, 'groupBox'):  # Breakfast
+                self.groupBox.setTitle(TranslationService.get("diet_plans.breakfast", "Breakfast"))
+            if hasattr(self, 'groupBox_2'):  # Morning Snack
+                self.groupBox_2.setTitle(TranslationService.get("diet_plans.morning_snack", "Morning Snack"))
+            if hasattr(self, 'groupBox_3'):  # Lunch
+                self.groupBox_3.setTitle(TranslationService.get("diet_plans.lunch", "Lunch"))
+            if hasattr(self, 'groupBox_4'):  # Afternoon Snack
+                self.groupBox_4.setTitle(TranslationService.get("diet_plans.afternoon_snack", "Afternoon Snack"))
+            if hasattr(self, 'groupBox_5'):  # Dinner
+                self.groupBox_5.setTitle(TranslationService.get("diet_plans.dinner", "Dinner"))
+            if hasattr(self, 'groupBox_6'):  # Evening Snack
+                self.groupBox_6.setTitle(TranslationService.get("diet_plans.evening_snack", "Evening Snack"))
+            
+            # Diet title placeholder
+            if hasattr(self, 'txt_diet_title'):
+                self.txt_diet_title.setPlaceholderText(TranslationService.get("placeholders.diet_title", "Diet Plan Title"))
+            
+            # Empty states for diet
+            if self.empty_state_diet:
+                self.empty_state_diet.setText(TranslationService.get("empty_states.select_client_diet", "Select a client to view diet plans"))
+            
+            # Active/Passive status in tables - update when data is reloaded
+            # (These are populated dynamically, so we'll update them when table is refreshed)
+            
+            # ===== MEASUREMENTS PAGE =====
+            if self.empty_state_measurements:
+                self.empty_state_measurements.setText(TranslationService.get("empty_states.select_client_measurements", "Select a client to view measurements"))
+            
+            # ===== SETTINGS PAGE =====
+            if hasattr(self, 'group_profile'):
+                self.group_profile.setTitle(TranslationService.get("settings.account", "Account"))
+            
+            self.label_current_user.setText(f"{TranslationService.get('settings.current_user', 'Logged in as:')} {self.current_user.get('fullname', 'User')}")
+            self.btn_edit_profile.setText(TranslationService.get("settings.edit_profile", "Edit Profile"))
+            self.btn_change_password.setText(TranslationService.get("settings.change_password", "Change Password"))
+            
+            # Settings page GroupBox titles
+            if hasattr(self, 'groupBox_9'):  # PREFERENCES
+                self.groupBox_9.setTitle(TranslationService.get("settings.preferences", "Preferences"))
+            if hasattr(self, 'groupBox_10'):  # DATA & EXPORT
+                self.groupBox_10.setTitle(TranslationService.get("settings.data_export", "Data & Export"))
+            
+            # Theme and language labels
+            if hasattr(self, 'label'):
+                self.label.setText(TranslationService.get("settings.language", "Language") + ":")
+            if hasattr(self, 'label_2'):
+                self.label_2.setText(TranslationService.get("settings.theme", "Theme") + ":")
+            
+            # Export and Backup buttons
+            if hasattr(self, 'btn_export_pdf'):
+                self.btn_export_pdf.setText(TranslationService.get("buttons.export_pdf", "Export as PDF"))
+            if hasattr(self, 'btn_backup'):
+                self.btn_backup.setText(TranslationService.get("buttons.backup", "Backup"))
+            
+            # ===== TABLE HEADERS =====
+            # Clients table headers
+            if self.tableWidget.columnCount() > 0:
+                headers = [
+                    TranslationService.get("clients.full_name", "Full Name"),
+                    TranslationService.get("clients.phone", "Phone"),
+                    TranslationService.get("clients.email", "Email"),
+                    TranslationService.get("clients.birth_date", "Birth Date"),
+                    TranslationService.get("tables.actions", "Actions")
+                ]
+                self.tableWidget.setHorizontalHeaderLabels(headers)
+            
+            # Diet history table headers
+            if self.table_diet_history.columnCount() > 0:
+                headers = [
+                    TranslationService.get("tables.date", "Date"),
+                    TranslationService.get("diet_plans.diet_name", "Diet Name"),
+                    TranslationService.get("diet_plans.status", "Status")
+                ]
+                self.table_diet_history.setHorizontalHeaderLabels(headers)
+            
+            # Measurements table headers
+            if self.table_measurements.columnCount() > 0:
+                headers = [
+                    TranslationService.get("tables.date", "Date"),
+                    TranslationService.get("measurements.weight", "Weight (kg)"),
+                    TranslationService.get("measurements.waist", "Waist (cm)"),
+                    TranslationService.get("measurements.body_fat", "Body Fat (%)"),
+                    TranslationService.get("measurements.muscle_mass", "Muscle (kg)"),
+                    TranslationService.get("measurements.metabolic_age", "Metabolic Age"),
+                    TranslationService.get("measurements.bmr", "BMR (kcal)")
+                ]
+                self.table_measurements.setHorizontalHeaderLabels(headers)
+            
+            print("✓ UI labels refreshed with new language")
+            
+        except Exception as e:
+            print(f"Error refreshing UI labels: {e}")
 
     def handle_diet_save(self):
         """

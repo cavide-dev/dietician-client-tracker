@@ -85,6 +85,7 @@ class StatsCardContainer(QWidget):
    
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.title_translator = None  # Function to translate titles
         self.setup_ui()
    
     def setup_ui(self):
@@ -94,13 +95,22 @@ class StatsCardContainer(QWidget):
        
         self.setLayout(layout)
    
+    def set_title_translator(self, translator_func):
+        """Set a function to translate card titles"""
+        self.title_translator = translator_func
+   
     def add_stats_card(self, title, current_value, change_value, unit=""):
         # Otomatik olarak hangi metriklerin inverted olduğunu belirle
         # Azalış iyi olanlara inverted=True de
         inverted_metrics = ["Weight", "Body Fat"]
         inverted = title in inverted_metrics
         
-        card = StatsCard(title, current_value, change_value, unit, inverted=inverted)
+        # Translate title if translator function is set
+        display_title = title
+        if self.title_translator:
+            display_title = self.title_translator(title)
+        
+        card = StatsCard(display_title, current_value, change_value, unit, inverted=inverted)
         self.layout().addWidget(card)
     
    

@@ -9,6 +9,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from app.services.validation_service import ValidationService
 from app.services.calculation_service import CalculationService
+from app.i18n.translations import TranslationService
 
 
 class ClientController:
@@ -77,24 +78,23 @@ class ClientController:
             birth_date = self.main.date_birth_add.date().toString("yyyy-MM-dd")
         except Exception:
             birth_date = QDate.currentDate().toString("yyyy-MM-dd")
-
         if not full_name:
-            QMessageBox.warning(self.main, "Warning", "Name cannot be empty!")
+            QMessageBox.warning(self.main, TranslationService.get("common.warning", "Warning"), TranslationService.get("validation.name_empty", "Name cannot be empty!"))
             return
         
         if not phone:
-            QMessageBox.warning(self.main, "Validation Error", "Phone number cannot be empty!")
+            QMessageBox.warning(self.main, TranslationService.get("common.error", "Validation Error"), TranslationService.get("validation.phone_empty", "Phone number cannot be empty!"))
             return
         
         # Validate using ValidationService
         is_valid_phone, phone_error = ValidationService.validate_phone(phone)
         if not is_valid_phone:
-            QMessageBox.warning(self.main, "Validation Error", f"Invalid phone number: {phone_error}")
+            QMessageBox.warning(self.main, TranslationService.get("common.error", "Validation Error"), f"{TranslationService.get('validation.invalid_phone', 'Invalid phone number:')} {phone_error}")
             return
         
         is_valid_birth_date, birth_date_error = ValidationService.validate_birth_date(birth_date)
         if not is_valid_birth_date:
-            QMessageBox.warning(self.main, "Validation Error", birth_date_error)
+            QMessageBox.warning(self.main, TranslationService.get("common.error", "Validation Error"), birth_date_error)
             return
 
         if self.main.db is not None:
@@ -111,7 +111,7 @@ class ClientController:
                     # INSERT new client
                     client_data["created_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     self.main.db['clients'].insert_one(client_data)
-                    QMessageBox.information(self.main, "Success", "Client added successfully!")
+                    QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("clients.client_added", "Client added successfully!"))
                     self.prepare_add_mode()
                     self.load_clients_table()
                     self.main.stackedWidget.setCurrentWidget(self.main.page_clients)
@@ -121,7 +121,7 @@ class ClientController:
                         {'_id': self.main.current_client_id},
                         {'$set': client_data}
                     )
-                    QMessageBox.information(self.main, "Success", "Client updated successfully!")
+                    QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("clients.client_updated", "Client updated successfully!"))
                     self.main.lbl_client_name.setText(full_name)
                     self.main.lbl_client_phone.setText(phone)
                     self.main.lbl_client_notes.setText(notes)
@@ -165,7 +165,7 @@ class ClientController:
         if self.main.db is not None and ids_to_delete:
             try:
                 result = self.main.db['clients'].delete_many({'_id': {'$in': ids_to_delete}})
-                QMessageBox.information(self.main, "Success", f"{result.deleted_count} clients deleted successfully.")
+                QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("clients.client_deleted", "Client deleted successfully!"))
                 self.load_clients_table()
             except Exception as e:
                 QMessageBox.critical(self.main, "Error", f"Could not delete: {e}")

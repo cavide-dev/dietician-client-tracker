@@ -3,9 +3,11 @@ DietController - Manages all diet plan operations.
 Responsible for: CRUD operations, listing, and management of diet plans.
 """
 
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QLabel
+from PyQt5.QtCore import Qt
 from datetime import datetime
 from app.services.validation_service import ValidationService
+from app.i18n.translations import TranslationService
 
 
 class DietController:
@@ -87,7 +89,7 @@ class DietController:
             
             # Insert new plan
             self.main.db['diet_plans'].insert_one(diet_data)
-            QMessageBox.information(self.main, "Success", "Diet Plan saved successfully!")
+            QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("diet_plans.diet_added", "Diet plan saved successfully!"))
             
             # Clear and refresh
             self.clear_diet_inputs()
@@ -125,7 +127,7 @@ class DietController:
                 {'_id': self.main.current_diet_id},
                 {'$set': diet_data}
             )
-            QMessageBox.information(self.main, "Success", "Diet plan updated successfully!")
+            QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("diet_plans.diet_updated", "Diet plan updated successfully!"))
             self.load_client_diet_plans()
             self.main.stack_diet_sub.setCurrentIndex(0)
 
@@ -148,7 +150,7 @@ class DietController:
 
         try:
             self.main.db['diet_plans'].delete_one({'_id': self.main.current_diet_id})
-            QMessageBox.information(self.main, "Success", "Diet plan deleted successfully!")
+            QMessageBox.information(self.main, TranslationService.get("dialogs.success", "Success"), TranslationService.get("diet_plans.diet_deleted", "Diet plan deleted successfully!"))
             self.load_client_diet_plans()
             self.main.stack_diet_sub.setCurrentIndex(0)
             
@@ -189,6 +191,8 @@ class DietController:
                     date_str = date_val.strftime('%Y-%m-%d') if hasattr(date_val, 'strftime') else str(date_val)
                 
                 date_item = QTableWidgetItem(date_str)
+                # Store diet ID in UserRole for double-click handling
+                date_item.setData(Qt.UserRole, str(diet.get('_id')))
                 self.main.table_diet_history.setItem(row_index, 0, date_item)
 
                 # Diet Name / Title
@@ -197,9 +201,12 @@ class DietController:
 
                 # Status with QLabel for QSS styling
                 status = diet.get('status', 'active').lower()
-                from PyQt5.QtWidgets import QLabel
-                from PyQt5.QtCore import Qt
-                status_label = QLabel(status.capitalize())
+                
+                # Translate status
+                status_key = f"diet_plans.{status}" if status in ['active', 'passive'] else "diet_plans.active"
+                status_text = TranslationService.get(status_key, status.capitalize())
+                
+                status_label = QLabel(status_text)
                 status_label.setProperty("status_type", status)
                 status_label.setAlignment(Qt.AlignCenter)
                 self.main.table_diet_history.setCellWidget(row_index, 2, status_label)
@@ -217,16 +224,27 @@ class DietController:
         self.main.txt_snack_2.clear()
         self.main.txt_dinner.clear()
         self.main.txt_snack_3.clear()
+        # Reset current_diet_id when clearing form
+        self.main.current_diet_id = None
 
     def prepare_add_diet_mode(self):
         """Prepare form for adding new diet plan."""
         self.clear_diet_inputs()
         self.main.stack_diet_sub.setCurrentIndex(1)
+        
+        # Disable delete button when adding new diet
+        if hasattr(self.main, 'btn_delete_diet'):
+            self.main.btn_delete_diet.setEnabled(False)
+            self.main.btn_delete_diet.setObjectName("btn_delete_diet_inactive")
+            # Force style refresh
+            self.main.btn_delete_diet.style().unpolish(self.main.btn_delete_diet)
+            self.main.btn_delete_diet.style().polish(self.main.btn_delete_diet)
 
     def load_client_dropdown(self):
         """Load clients into dropdown for diet plans page."""
         self.main.cmb_client_select.clear()
-        self.main.cmb_client_select.addItem("Select Client...", None)
+        select_client_text = TranslationService.get("diet_plans.select_client_first", "Select a client...")
+        self.main.cmb_client_select.addItem(select_client_text, None)
 
         try:
             query = {}
