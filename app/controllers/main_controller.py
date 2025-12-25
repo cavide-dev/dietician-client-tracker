@@ -637,6 +637,19 @@ class MainController(QMainWindow):
                 self.txt_phone.setText(client.get("phone", ""))
                 self.txt_notes.setPlainText(client.get("notes", ""))
                 
+                # Set birth date if available
+                # Birth date is stored as string in format "yyyy-MM-dd"
+                birth_date_str = client.get("birth_date", "")
+                if birth_date_str:
+                    try:
+                        # Parse string to QDate and set in widget
+                        from datetime import datetime
+                        birth_date_obj = datetime.strptime(birth_date_str, "%Y-%m-%d")
+                        self.date_birth_add.setDate(birth_date_obj.date())
+                    except Exception as e:
+                        print(f"Error parsing birth date: {e}")
+                        # Leave as current date if parsing fails
+                
                 # 3. Switch View
                 # Show the form page, now filled with the client's data.
                 self.stackedWidget.setCurrentWidget(self.page_add_client)
