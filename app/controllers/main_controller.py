@@ -1440,25 +1440,37 @@ class MainController(QMainWindow):
                 
                 # --- Create Cells (Items) ---
                 
-                # Determine row color based on status
+                # Determine row color based on status and theme
                 if status.lower() == "active":
-                    bg_color = QColor(200, 255, 200)  # Light green
-                else:  # Archived/Passive
-                    bg_color = QColor(220, 220, 220)  # Light gray
+                    # Apple-style blue that matches the theme
+                    if self.current_theme == "Dark":
+                        bg_color = QColor(10, 132, 255)  # Dark theme blue #0A84FF
+                    else:
+                        bg_color = QColor(0, 122, 255)   # Light theme blue #007AFF
+                    text_color = QColor(255, 255, 255)  # White text for blue background
+                else:  # Archived/Passive - no special color, use default
+                    bg_color = None
+                    text_color = None
 
                 # Column 0: Date
                 date_item = QTableWidgetItem(date_str)
-                date_item.setBackground(bg_color)
+                if bg_color:
+                    date_item.setBackground(bg_color)
+                    date_item.setForeground(text_color)
                 self.table_diet_history.setItem(row_position, 0, date_item)
                 
                 # Column 1: Title
                 title_item = QTableWidgetItem(title)
-                title_item.setBackground(bg_color)
+                if bg_color:
+                    title_item.setBackground(bg_color)
+                    title_item.setForeground(text_color)
                 self.table_diet_history.setItem(row_position, 1, title_item)
                 
                 # Column 2: Status
                 status_item = QTableWidgetItem(status)
-                status_item.setBackground(bg_color)
+                if bg_color:
+                    status_item.setBackground(bg_color)
+                    status_item.setForeground(text_color)
                 self.table_diet_history.setItem(row_position, 2, status_item)
                 
                 # --- CRITICAL STEP: Hidden ID ---
@@ -1668,6 +1680,10 @@ class MainController(QMainWindow):
             if hasattr(self, 'btn_delete_diet'):
                 self.btn_delete_diet.setEnabled(True)
                 self.btn_delete_diet.setObjectName("btn_delete_diet_danger")
+                self.btn_delete_diet.setCursor(Qt.PointingHandCursor)
+                # Force style refresh to apply QSS rules for new objectName
+                self.btn_delete_diet.style().unpolish(self.btn_delete_diet)
+                self.btn_delete_diet.style().polish(self.btn_delete_diet)
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Could not open diet: {e}")
@@ -1817,6 +1833,10 @@ class MainController(QMainWindow):
         if hasattr(self, 'btn_delete_diet'):
             self.btn_delete_diet.setEnabled(False)
             self.btn_delete_diet.setObjectName("btn_delete_diet_inactive")
+            self.btn_delete_diet.setCursor(Qt.ArrowCursor)
+            # Force style refresh to apply QSS rules for new objectName
+            self.btn_delete_diet.style().unpolish(self.btn_delete_diet)
+            self.btn_delete_diet.style().polish(self.btn_delete_diet)
         
         # Go to form page
         self.stack_diet_sub.setCurrentIndex(1)
