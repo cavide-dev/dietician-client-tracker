@@ -140,6 +140,7 @@
     "delete_confirm": "이 플랜을 삭제하시겠습니까?",
     "no_diets": "등록된 플랜이 없습니다. 새로 만들어 주세요.",
     "select_client": "먼저 고객을 선택해 주세요!",
+    "select_client_first": "고객을 선택하세요...",
     "select_diet_update": "업데이트할 플랜을 선택해 주세요!",
     "select_diet_delete": "삭제할 플랜을 선택해 주세요!"
   },
