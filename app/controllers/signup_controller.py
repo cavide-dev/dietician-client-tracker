@@ -3,7 +3,7 @@ Signup Window Controller
 Handles user registration and account creation
 """
 
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QLabel, QWidget
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt, pyqtSignal
 from pymongo import MongoClient
@@ -40,6 +40,9 @@ class SignupController(QMainWindow):
         
         # Allow Enter key to signup
         self.input_confirm_password.returnPressed.connect(self.handle_signup)
+        
+        # Setup language buttons
+        self.setup_language_buttons()
     
     def init_database(self, connection_string=None):
         """
@@ -178,3 +181,69 @@ class SignupController(QMainWindow):
         """
         self.signup_successful.emit()
         self.close()
+    
+    def setup_language_buttons(self):
+        """Add language selection text labels to signup window (top right)"""
+        
+        # Create language layout
+        lang_layout = QHBoxLayout()
+        lang_layout.setContentsMargins(10, 10, 10, 0)
+        lang_layout.setSpacing(15)
+        lang_layout.addStretch()  # Push labels to the right
+        
+        # Language data: (code, label)
+        languages = [
+            ("en", "EN"),
+            ("tr", "TR"),
+            ("ko", "한")
+        ]
+        
+        # Create clickable text labels
+        self.lang_labels = {}
+        for lang_code, short_name in languages:
+            label = QLabel(short_name)
+            label.setCursor(Qt.PointingHandCursor)  # Make it look clickable
+            label.setStyleSheet("color: #0066cc; text-decoration: underline; font-weight: bold;")
+            label.setObjectName(f"label_lang_{lang_code}")
+            
+            # Store reference and connect click handler
+            label.mousePressEvent = lambda event, code=lang_code: self.change_signup_language(code)
+            self.lang_labels[lang_code] = label
+            lang_layout.addWidget(label)
+        
+        # Add language layout to the main layout
+        main_layout = self.centralwidget.layout()
+        if main_layout and hasattr(main_layout, 'addWidget'):
+            lang_widget = QWidget()
+            lang_widget.setLayout(lang_layout)
+            try:
+                main_layout.addWidget(lang_widget, 0, 0, 1, -1)
+            except TypeError:
+                main_layout.insertWidget(0, lang_widget)
+    
+    def change_signup_language(self, lang_code):
+        """Change language on signup screen"""
+        # Initialize TranslationService with new language
+        TranslationService.initialize(language=lang_code, debug=False)
+        
+        # Update all signup labels
+        self.label_title.setText(TranslationService.get("register.title", "Create Account"))
+        self.label_subtitle.setText(TranslationService.get("register.subtitle", "Join Our Platform"))
+        self.label_fullname.setText(TranslationService.get("register.fullname", "Full Name") + ":")
+        self.label_username.setText(TranslationService.get("register.username", "Username") + ":")
+        self.label_email.setText(TranslationService.get("register.email", "Email") + ":")
+        self.label_password.setText(TranslationService.get("register.password", "Password") + ":")
+        self.label_confirm_password.setText(TranslationService.get("register.confirm_password", "Confirm Password") + ":")
+        self.btn_signup.setText(TranslationService.get("buttons.register", "Register"))
+        
+        # Update combined signin text
+        self.btn_signin_link.setText(TranslationService.get("register.already_account_full", "Already have an account? Sign In"))
+        
+        # Update placeholder texts
+        self.input_fullname.setPlaceholderText(TranslationService.get("register.fullname_placeholder", "Enter your full name"))
+        self.input_username.setPlaceholderText(TranslationService.get("register.username_placeholder", "Enter your username"))
+        self.input_email.setPlaceholderText(TranslationService.get("register.email_placeholder", "Enter your email"))
+        self.input_password.setPlaceholderText(TranslationService.get("register.password_placeholder", "Enter your password"))
+        self.input_confirm_password.setPlaceholderText(TranslationService.get("register.confirm_password_placeholder", "Confirm your password"))
+        
+        print(f"✓ Signup language changed to: {lang_code}")

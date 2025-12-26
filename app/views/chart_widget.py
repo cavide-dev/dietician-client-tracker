@@ -12,6 +12,9 @@ cjk_fonts = ['Malgun Gothic', 'SimSun', 'NotoSansCJK', 'DejaVu Sans']
 for font in cjk_fonts:
     try:
         matplotlib.rcParams['font.sans-serif'] = [font] + [f for f in matplotlib.rcParams['font.sans-serif'] if f != font]
+        matplotlib.rcParams['font.weight'] = 'bold'  # Make all text bolder
+        matplotlib.rcParams['axes.labelweight'] = 'bold'
+        matplotlib.rcParams['axes.titleweight'] = 'bold'
         break
     except:
         pass
@@ -119,7 +122,8 @@ class TrendChart(QWidget):
         
         ax1.plot(dates, weights, color=blue_color, marker='o', linewidth=2, markersize=6, label=weight_label)
         ax1.plot(dates, muscles, 'g-s', linewidth=2, markersize=6, label=muscle_label)
-        ax1.set_ylabel('Weight & Muscle (kg)', color=blue_color, fontsize=10, fontweight='bold')
+        weight_muscle_axis_label = TranslationService.get("measurements.weight_muscle_axis", "Weight & Muscle (kg)")
+        ax1.set_ylabel(weight_muscle_axis_label, color=blue_color, fontsize=11, fontweight='bold')
         ax1.tick_params(axis='y', labelcolor=blue_color)
         ax1.tick_params(axis='x', colors=text_color)
         ax1.xaxis.label.set_color(text_color)
@@ -131,15 +135,16 @@ class TrendChart(QWidget):
         ax1.grid(True, alpha=0.3, color=grid_color)
         
         # ===== Plot on Right Y-axis (Body Fat) =====
+        body_fat_axis_label = TranslationService.get("measurements.body_fat_axis", "Body Fat (%)")
         ax2.plot(dates, body_fats, color=red_color, marker='^', linewidth=2, markersize=6, label=body_fat_label)
-        ax2.set_ylabel('Body Fat (%)', color=red_color, fontsize=10, fontweight='bold')
+        ax2.set_ylabel(body_fat_axis_label, color=red_color, fontsize=11, fontweight='bold')
         ax2.tick_params(axis='y', labelcolor=red_color)
         ax2.spines['right'].set_color(red_color)
         
         # ===== Labels & Title =====
-        ax1.set_xlabel('', fontsize=10, fontweight='bold')
+        ax1.set_xlabel('', fontsize=11, fontweight='bold')
         chart_title = TranslationService.get("measurements.trends", "Measurement Trends")
-        ax1.set_title(chart_title, fontsize=12, fontweight='bold', color=text_color)
+        ax1.set_title(chart_title, fontsize=13, fontweight='bold', color=text_color)
         
         # ===== Rotate X-axis labels =====
         figure.autofmt_xdate(rotation=30, ha='right')

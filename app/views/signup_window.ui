@@ -86,7 +86,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Join our platform</string>
+         <string>Join Our Platform</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -247,11 +247,17 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_signin">
         <item>
-         <widget class="QLabel" name="label_have_account">
-          <property name="text">
-           <string>Already have an account?</string>
+         <spacer name="horizontalSpacer_left">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-         </widget>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="QPushButton" name="btn_signin_link">
@@ -259,7 +265,7 @@
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="text">
-           <string>Sign In</string>
+           <string>Already have an account? Sign In</string>
           </property>
          </widget>
         </item>
@@ -268,11 +274,11 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </spacer>
         </item>
