@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Translation System QA Test
 Validates:
