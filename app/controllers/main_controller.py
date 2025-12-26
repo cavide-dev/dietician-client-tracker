@@ -371,7 +371,15 @@ class MainController(QMainWindow):
         self.stackedWidget.setCurrentWidget(self.page_diet_plans) 
         
         self.refresh_ui_labels()  # Refresh UI labels when switching to diet page
-        # 2. Reset the Sub-Stacked Widget to the List/Table View (Page 0)
+        
+        # 2. Refresh diet plans and dropdown with current language
+        if hasattr(self, 'diet_controller') and self.diet_controller:
+            if hasattr(self.diet_controller, 'load_client_dropdown'):
+                self.diet_controller.load_client_dropdown()
+            if self.current_client_id and hasattr(self.diet_controller, 'load_client_diet_plans'):
+                self.diet_controller.load_client_diet_plans()
+        
+        # 3. Reset the Sub-Stacked Widget to the List/Table View (Page 0)
         # This fixes the issue of getting stuck on the 'Add Diet' form 
         # when navigating back to this page.
         try:
