@@ -59,11 +59,11 @@ class EditProfileDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         
-        btn_save = QPushButton(TranslationService.get("profile_dialogs.save_button", "Save Changes"))
+        btn_save = QPushButton(TranslationService.get("profile_dialogs.save_changes", "Save Changes"))
         btn_save.clicked.connect(self.save_changes)
         button_layout.addWidget(btn_save)
         
-        btn_cancel = QPushButton(TranslationService.get("common.cancel", "Cancel"))
+        btn_cancel = QPushButton(TranslationService.get("buttons.cancel", "Cancel"))
         btn_cancel.setObjectName("btn_cancel_dialog")
         btn_cancel.clicked.connect(self.reject)
         button_layout.addWidget(btn_cancel)
