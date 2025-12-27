@@ -226,6 +226,9 @@ class MeasurementController:
             except:
                 pass
             self.main.trend_chart.deleteLater()
+            # Process pending events to ensure cleanup happens
+            from PyQt5.QtWidgets import QApplication
+            QApplication.processEvents()
             self.main.trend_chart = None
             tab_overview.layout().update()
         

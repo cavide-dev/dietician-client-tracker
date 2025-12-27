@@ -221,3 +221,20 @@ class TrendChart(QWidget):
             except:
                 pass
         super().closeEvent(event)
+    
+    def __del__(self):
+        """Destructor - ensure all matplotlib resources are cleaned up"""
+        try:
+            if self.canvas is not None:
+                try:
+                    self.canvas.figure.clear()
+                    plt.close(self.figure)
+                except:
+                    pass
+            if self.figure is not None:
+                try:
+                    plt.close(self.figure)
+                except:
+                    pass
+        except:
+            pass
